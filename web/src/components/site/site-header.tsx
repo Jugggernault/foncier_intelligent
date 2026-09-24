@@ -8,7 +8,7 @@ import { Logo } from "./logo";
 
 export function SiteHeader() {
   return (
-    <header className="relative z-20 bg-navy text-white">
+    <header className="relative z-20 bg-navy text-white print:hidden">
       <div className="tricolor h-1" />
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Logo />
