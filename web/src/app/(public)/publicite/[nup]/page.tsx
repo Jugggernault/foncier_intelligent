@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellPlusIcon, FileWarningIcon } from "lucide-react";
 import { ParcelRow } from "@/components/parcel/parcel-row";
-import { PublicityMap } from "@/components/parcel/publicity-map";
+import { LinkedMap } from "@/components/map/linked-map";
 import { PageHeader } from "@/components/site/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
@@ -87,10 +87,10 @@ export default async function NoticePage({ params }: PageProps<"/publicite/[nup]
         </div>
         <aside className="lg:col-span-5">
           <div className="aspect-square overflow-hidden rounded-lg border">
-            <PublicityMap
+            <LinkedMap
               parcels={[...near.map((n) => ({ nup: n.nup, polygon: n.polygon })), { nup: p.nup, polygon: p.polygon, level: "caution" as const }]}
               selected={p.nup}
-            />
+            hrefBase="/publicite" label="Carte des avis de publicité foncière" />
           </div>
         </aside>
       </div>

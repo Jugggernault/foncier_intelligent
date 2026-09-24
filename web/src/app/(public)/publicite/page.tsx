@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ParcelRow } from "@/components/parcel/parcel-row";
-import { PublicityMap } from "@/components/parcel/publicity-map";
+import { LinkedMap } from "@/components/map/linked-map";
 import { PageHeader } from "@/components/site/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ItemGroup } from "@/components/ui/item";
@@ -61,7 +61,7 @@ export default function PublicityPage() {
         <aside className="lg:col-span-5">
           <div className="sticky top-6">
             <div className="aspect-square overflow-hidden rounded-lg border lg:aspect-[4/5]">
-              <PublicityMap parcels={open.map((n) => ({ nup: n.nup, polygon: n.polygon, level: "caution" as const }))} />
+              <LinkedMap parcels={open.map((n) => ({ nup: n.nup, polygon: n.polygon, level: "caution" as const }))} hrefBase="/publicite" label="Carte des avis de publicité foncière" />
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
               Avis ouverts. Source prévue : table des publicités foncières publiée par l&apos;ANDF (données de démonstration).
