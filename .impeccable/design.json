@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T18:51:52+00:00",
+  "title": "Design System: Foncier Intelligent",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Marine Bénin",
+        "canonical": "#093e73",
+        "tonalRamp": [
+          "#000a24",
+          "#00254d",
+          "#0f4278",
+          "#32639b",
+          "#5385c0",
+          "#75a8e6",
+          "#a7cdfb",
+          "#e4f0ff"
+        ]
+      },
+      "navy-deep": {
+        "role": "primary",
+        "displayName": "Nuit Profonde",
+        "canonical": "#06111f",
+        "tonalRamp": [
+          "#030b19",
+          "#192635",
+          "#364354",
+          "#546374",
+          "#758497",
+          "#97a7ba",
+          "#bbcbdf",
+          "#e5f0fe"
+        ]
+      },
+      "navy-ink": {
+        "role": "primary",
+        "displayName": "Encre Marine",
+        "canonical": "#0a2d52",
+        "tonalRamp": [
+          "#000a24",
+          "#022549",
+          "#21436a",
+          "#40638d",
+          "#6185b0",
+          "#82a8d5",
+          "#a6cdfb",
+          "#e3f0ff"
+        ]
+      },
+      "navy-line": {
+        "role": "primary",
+        "displayName": "Filet Marine",
+        "canonical": "#1d5189",
+        "tonalRamp": [
+          "#000a25",
+          "#00244e",
+          "#0b4279",
+          "#30639c",
+          "#5185c1",
+          "#73a9e7",
+          "#a5cdfc",
+          "#e4f0fe"
+        ]
+      },
+      "sky": {
+        "role": "neutral",
+        "displayName": "Ciel",
+        "canonical": "#eef3fb",
+        "tonalRamp": [
+          "#080b10",
+          "#22252b",
+          "#3e4249",
+          "#5d6168",
+          "#7e838a",
+          "#a1a5ad",
+          "#c5c9d1",
+          "#eaeff7"
+        ]
+      },
+      "sky-line": {
+        "role": "neutral",
+        "displayName": "Ligne Ciel",
+        "canonical": "#d6e2f2",
+        "tonalRamp": [
+          "#050b16",
+          "#1d2631",
+          "#394350",
+          "#586270",
+          "#788392",
+          "#9ba6b5",
+          "#bfcada",
+          "#e5f0fe"
+        ]
+      },
+      "signal": {
+        "role": "secondary",
+        "displayName": "Jaune Signal",
+        "canonical": "#ffd400",
+        "tonalRamp": [
+          "#120a00",
+          "#2e2400",
+          "#504100",
+          "#73600e",
+          "#9a8016",
+          "#c3a20a",
+          "#ecc628",
+          "#feefb9"
+        ]
+      },
+      "signal-hover": {
+        "role": "secondary",
+        "displayName": "Jaune Signal clair",
+        "canonical": "#ffe033",
+        "tonalRamp": [
+          "#100b00",
+          "#2c2500",
+          "#4d4204",
+          "#6f6115",
+          "#95821e",
+          "#bda51d",
+          "#e4c935",
+          "#fff0a7"
+        ]
+      },
+      "signal-ink": {
+        "role": "secondary",
+        "displayName": "Encre Signal",
+        "canonical": "#1a1400",
+        "tonalRamp": [
+          "#100a00",
+          "#2b250d",
+          "#484229",
+          "#686148",
+          "#898368",
+          "#aca589",
+          "#d1c9ad",
+          "#f6efd1"
+        ]
+      },
+      "flag-green": {
+        "role": "tertiary",
+        "displayName": "Drapeau vert",
+        "canonical": "#008751",
+        "tonalRamp": [
+          "#001004",
+          "#002e18",
+          "#084f2f",
+          "#007445",
+          "#279962",
+          "#53bd84",
+          "#7ae3a7",
+          "#c4ffda"
+        ]
+      },
+      "flag-yellow": {
+        "role": "tertiary",
+        "displayName": "Drapeau jaune",
+        "canonical": "#fcd116",
+        "tonalRamp": [
+          "#120a00",
+          "#2e2400",
+          "#504103",
+          "#735f13",
+          "#9a801c",
+          "#c3a219",
+          "#ecc633",
+          "#feeebb"
+        ]
+      },
+      "flag-red": {
+        "role": "tertiary",
+        "displayName": "Drapeau rouge",
+        "canonical": "#e8112d",
+        "tonalRamp": [
+          "#220000",
+          "#4e0005",
+          "#800012",
+          "#b41424",
+          "#ee1e32",
+          "#fe736e",
+          "#ffb2ac",
+          "#fee9e7"
+        ]
+      },
+      "risk-danger": {
+        "role": "tertiary",
+        "displayName": "Risque danger",
+        "canonical": "#b3122b",
+        "tonalRamp": [
+          "#220001",
+          "#4b040d",
+          "#800019",
+          "#b4132c",
+          "#dc444c",
+          "#fe7374",
+          "#ffb2af",
+          "#fee9e8"
+        ]
+      },
+      "risk-danger-soft": {
+        "role": "tertiary",
+        "displayName": "Risque danger doux",
+        "canonical": "#fde8eb",
+        "tonalRamp": [
+          "#130709",
+          "#2f2023",
+          "#4d3d40",
+          "#6e5c5f",
+          "#8f7d80",
+          "#b39fa2",
+          "#d8c3c6",
+          "#fde8eb"
+        ]
+      },
+      "risk-caution": {
+        "role": "tertiary",
+        "displayName": "Risque prudence",
+        "canonical": "#a15c00",
+        "tonalRamp": [
+          "#190500",
+          "#391d01",
+          "#603708",
+          "#8d5003",
+          "#b66f23",
+          "#dc924b",
+          "#fdb97b",
+          "#ffead9"
+        ]
+      },
+      "risk-caution-soft": {
+        "role": "tertiary",
+        "displayName": "Risque prudence doux",
+        "canonical": "#fff1d6",
+        "tonalRamp": [
+          "#130900",
+          "#2e230e",
+          "#4c402a",
+          "#6c6048",
+          "#8d8168",
+          "#b1a38a",
+          "#d5c8ad",
+          "#fbedd2"
+        ]
+      },
+      "risk-clear": {
+        "role": "tertiary",
+        "displayName": "Risque clair",
+        "canonical": "#00703f",
+        "tonalRamp": [
+          "#001004",
+          "#022e17",
+          "#0d4f2d",
+          "#0a7443",
+          "#3c9763",
+          "#62bb85",
+          "#87e0a8",
+          "#c6ffd9"
+        ]
+      },
+      "risk-clear-soft": {
+        "role": "tertiary",
+        "displayName": "Risque clair doux",
+        "canonical": "#dff3e8",
+        "tonalRamp": [
+          "#020e08",
+          "#1a2921",
+          "#36463e",
+          "#55665d",
+          "#75877e",
+          "#98aaa0",
+          "#bbcfc4",
+          "#e0f4e9"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Blanc",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Bleu Nuit Texte",
+        "canonical": "#0d1b2a",
+        "tonalRamp": [
+          "#020c19",
+          "#182636",
+          "#344355",
+          "#536375",
+          "#738497",
+          "#95a7bb",
+          "#b9cbe0",
+          "#e3f0fe"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Ardoise",
+        "canonical": "#4a5a6e",
+        "tonalRamp": [
+          "#020b1b",
+          "#182637",
+          "#344356",
+          "#526377",
+          "#738499",
+          "#95a7bd",
+          "#b9cbe2",
+          "#e4f0fe"
+        ]
+      },
+      "input-line": {
+        "role": "neutral",
+        "displayName": "Trait de champ",
+        "canonical": "#c3d2e6",
+        "tonalRamp": [
+          "#030b18",
+          "#1a2635",
+          "#374353",
+          "#556274",
+          "#768496",
+          "#98a6ba",
+          "#bccbde",
+          "#e4f0ff"
+        ]
+      },
+      "ring": {
+        "role": "neutral",
+        "displayName": "Anneau",
+        "canonical": "#2258a6",
+        "tonalRamp": [
+          "#000039",
+          "#002254",
+          "#033e89",
+          "#295fae",
+          "#4b82d4",
+          "#6da6fa",
+          "#a9cbff",
+          "#e5effe"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The single hero h1 on navy."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2, navy on light fields, white on navy."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Verdict headline, list item and step titles."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "NUP, fees, years, delays; always tabular."
+      },
+      "body-lead": {
+        "displayName": "Body lead",
+        "purpose": "Section leads."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels and small UI text."
+      }
+    },
+    "shadows": [
+      {
+        "name": "carte-sur-marine",
+        "value": "0 24px 60px -20px rgba(2,12,27,0.65)",
+        "purpose": "White verdict card lifted off the navy hero."
+      },
+      {
+        "name": "carte-sur-ciel",
+        "value": "0 18px 40px -24px rgba(9,62,115,0.45)",
+        "purpose": "White fee calculator lifted off the sky band."
+      }
+    ],
+    "motion": [
+      {
+        "name": "develop",
+        "value": "700ms cubic-bezier(0.16,1,0.3,1)",
+        "purpose": "Satellite image blur-in when the year or parcel changes."
+      },
+      {
+        "name": "scan",
+        "value": "1.1s cubic-bezier(0.22,1,0.36,1)",
+        "purpose": "Signal scan line sweeping the image when a NUP is verified."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "All animation and smooth scroll cut under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ],
+    "tricolor": {
+      "value": "linear-gradient(90deg, #008751 0 33.33%, #fcd116 33.33% 66.66%, #e8112d 66.66% 100%)",
+      "height": "4px",
+      "purpose": "Top of header and footer only."
+    },
+    "imageryCredit": "Sentinel-2 cloudless © EOX IT Services (CC BY-NC-SA 4.0), données Copernicus modifiées"
+  },
+  "components": [
+    {
+      "name": "Signal Button",
+      "kind": "button",
+      "refersTo": "button-signal",
+      "description": "The one next action per band (Vérifier, Poser une question).",
+      "html": "<button class=\"ds-btn-signal\">Vérifier <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-signal{display:inline-flex;align-items:center;gap:6px;height:56px;padding:0 28px;background:var(--signal,#ffd400);color:var(--signal-ink,#1a1400);font:700 1rem/1 Figtree,system-ui,sans-serif;border:1px solid transparent;border-radius:4.8px;cursor:pointer;transition:background .15s}.ds-btn-signal:hover{background:#ffe033}.ds-btn-signal:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,212,0,.6)}.ds-btn-signal:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Navy Button",
+      "kind": "button",
+      "refersTo": "button-navy",
+      "description": "Secondary action on light fields (shadcn default variant).",
+      "html": "<button class=\"ds-btn-navy\">Surveiller ma parcelle</button>",
+      "css": ".ds-btn-navy{height:48px;padding:0 20px;background:var(--navy,#093e73);color:#fff;font:500 1rem/1 Figtree,system-ui,sans-serif;border:1px solid transparent;border-radius:6px;cursor:pointer;transition:background .15s}.ds-btn-navy:hover{background:#0a2d52}.ds-btn-navy:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(34,88,166,.5)}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Tertiary action; on navy it inverts to a white/30 border.",
+      "html": "<button class=\"ds-btn-outline\">Tous les avis</button>",
+      "css": ".ds-btn-outline{height:48px;padding:0 20px;background:transparent;color:#0d1b2a;font:500 1rem/1 Figtree,system-ui,sans-serif;border:1px solid #d6e2f2;border-radius:6px;cursor:pointer;transition:background .15s}.ds-btn-outline:hover{background:#eef3fb;color:#093e73}.ds-btn-outline:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(34,88,166,.5)}"
+    },
+    {
+      "name": "NUP Field",
+      "kind": "input",
+      "refersTo": "input-nup",
+      "description": "White search field on navy, value in tabular Archivo.",
+      "html": "<div class=\"ds-nup-wrap\"><label class=\"ds-nup\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input placeholder=\"Ex. 101236198\" inputmode=\"numeric\" maxlength=\"9\"></label></div>",
+      "css": ".ds-nup-wrap{background:#093e73;padding:24px}.ds-nup{display:flex;align-items:center;gap:8px;height:56px;padding:0 16px;background:#fff;border:1px solid rgba(255,255,255,.15);border-radius:4.8px;color:rgba(9,62,115,.6)}.ds-nup:focus-within{box-shadow:0 0 0 3px rgba(255,212,0,.6)}.ds-nup input{flex:1;border:0;outline:0;background:transparent;color:#0d1b2a;font:600 1.125rem Archivo,system-ui,sans-serif;font-variation-settings:'wdth' 112;letter-spacing:.06em;font-variant-numeric:tabular-nums}.ds-nup input::placeholder{font:400 1rem Figtree,system-ui,sans-serif;letter-spacing:normal;color:#4a5a6e}"
+    },
+    {
+      "name": "Sample NUP Chip",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Clickable real NUP on navy; pressed state via aria-pressed.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\"><b>101236198</b><span>Godomey</span></button><button class=\"ds-chip\" aria-pressed=\"false\"><b>101232574</b><span>Ouidah</span></button></div>",
+      "css": ".ds-chips{display:flex;gap:8px;background:#093e73;padding:16px}.ds-chip{text-align:left;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:4.8px;background:transparent;color:rgba(255,255,255,.8);cursor:pointer;transition:border-color .15s,color .15s}.ds-chip b{display:block;font:700 .875rem Archivo,system-ui,sans-serif;font-variation-settings:'wdth' 112;letter-spacing:.04em;font-variant-numeric:tabular-nums}.ds-chip span{display:block;font:400 .75rem Figtree,system-ui,sans-serif;color:rgba(255,255,255,.6)}.ds-chip:hover{border-color:rgba(255,255,255,.5);color:#fff}.ds-chip[aria-pressed=true]{border-color:#fff;background:rgba(255,255,255,.1);color:#fff}.ds-chip:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,212,0,.6)}"
+    },
+    {
+      "name": "Verdict Card",
+      "kind": "card",
+      "refersTo": "card-verdict",
+      "description": "White card on navy with the one soft lift and a full-bleed risk band.",
+      "html": "<div class=\"ds-field\"><article class=\"ds-verdict\"><header><small>NUP</small><strong>101236198</strong><span>Togbin-Daho · Godomey</span></header><div class=\"ds-band\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/></svg><p>Terrain de l'État : il ne peut pas vous être vendu</p></div></article></div>",
+      "css": ".ds-field{background:#093e73;padding:32px}.ds-verdict{max-width:420px;background:#fff;color:#0d1b2a;border-radius:6px;overflow:hidden;box-shadow:0 24px 60px -20px rgba(2,12,27,.65)}.ds-verdict header{padding:20px 24px 16px;font-family:Figtree,system-ui,sans-serif}.ds-verdict small{display:block;font-size:.75rem;color:#4a5a6e}.ds-verdict strong{display:block;font:800 1.5rem Archivo,system-ui,sans-serif;font-variation-settings:'wdth' 112;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#093e73}.ds-verdict header span{font-size:.875rem;color:#4a5a6e}.ds-band{display:flex;gap:12px;align-items:flex-start;padding:16px 24px;background:#b3122b;color:#fff}.ds-band p{margin:0;font:800 1.125rem/1.35 Archivo,system-ui,sans-serif;font-variation-settings:'wdth' 112}"
+    },
+    {
+      "name": "Header with Tricolor Filet",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Navy bar under a 4px flag filet; white/80 links with white/10 hover.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-tri\"></div><nav><span class=\"ds-brand\">Foncier Intelligent</span><a href=\"#\">Vérifier</a><a href=\"#\">Carte</a><a href=\"#\">Démarches</a></nav></header>",
+      "css": ".ds-header{background:#093e73;color:#fff}.ds-tri{height:4px;background:linear-gradient(90deg,#008751 0 33.33%,#fcd116 33.33% 66.66%,#e8112d 66.66% 100%)}.ds-header nav{display:flex;align-items:center;gap:4px;height:64px;padding:0 24px}.ds-brand{margin-right:auto;font:800 1.05rem Archivo,system-ui,sans-serif;font-variation-settings:'wdth' 112}.ds-header a{padding:8px 12px;border-radius:4.8px;color:rgba(255,255,255,.8);font:500 .95rem Figtree,system-ui,sans-serif;text-decoration:none;transition:background .15s,color .15s}.ds-header a:hover{background:rgba(255,255,255,.1);color:#fff}.ds-header a:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(255,212,0,.6)}"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Small square-cornered shadcn Badge (Parcelle publiée, Clos, Ouvert).",
+      "html": "<span class=\"ds-badge\">Parcelle publiée par l'ANDF</span> <span class=\"ds-badge ds-badge-open\">Ouvert</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;height:20px;padding:2px 8px;border-radius:3.6px;background:#eef3fb;color:#093e73;font:500 .75rem Figtree,system-ui,sans-serif}.ds-badge-open{background:#093e73;color:#fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le Registre à ciel ouvert",
+    "overview": "Foncier Intelligent carries the visual DNA of innovation.gouv.bj (the navy field, the flag yellow, the tricolor, the tight corners) and modernizes it into a working instrument. The page does not introduce the service before offering it: a navy field owns the top of the screen, a white verdict card sits on it, and the land itself, seen by Sentinel-2, is the only photograph. The authority comes from real data shown plainly, not from ornament.\n\nThe rhythm alternates fields: navy, deep navy, white, sky, white, sky, white, navy. Each band holds one idea, set in wide, heavy Archivo headlines over calm Figtree text. Numbers (NUP, areas, fees, delays, years) are always tabular and usually set in the display face, because in this product the number is the evidence.\n\nThe system is written in French and obeys French typography. It rejects the government-portal news carousel and the SaaS hero followed by a grid of feature cards.",
+    "keyCharacteristics": [
+      "Navy field (#093e73) owns the first viewport; white cards float on it with one soft shadow.",
+      "Signal yellow is the button a citizen should press next, and nothing else.",
+      "Risk is spoken in three colors only: danger, caution, clear.",
+      "Archivo at wdth 112, weight 800, for headlines; Figtree for reading; tabular numerals everywhere data appears.",
+      "Tight corners (6px at most on surfaces), a 4px tricolor filet at the top of header and footer.",
+      "Sentinel-2 imagery is the only photographic material, always credited."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Rule",
+        "body": "Yellow marks the one action a citizen should take next, at most one yellow button per band. Secondary actions are navy or outline. Yellow is never a background field, a heading color, or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Verdicts Rule",
+        "body": "Risk is expressed only with the danger / caution / clear pairs, always with an icon and a written verdict. Flag red and flag green never stand in for risk.",
+        "section": "colors"
+      },
+      {
+        "name": "The Field Alternation Rule",
+        "body": "Sections alternate navy, deep navy, white and sky; two adjacent bands never share a field.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Every number that a citizen might compare (NUP, m², ha, FCFA, days, years) uses tabular numerals, and identifiers get positive tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The French Typography Rule",
+        "body": "A non-breaking space precedes « ? », « ! », « : » and « ; », including in JSX (`&nbsp;:`). Numbers are grouped with `Intl.NumberFormat(\"fr-FR\")`; dates are written out in French.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lift Rule",
+        "body": "Only a white card sitting on a navy or sky field gets a shadow, and only this soft offset. Everything else (items, tables, badges, buttons) is flat, separated by borders or tint.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do open every product surface on a navy field with the task itself, not a presentation of it.",
+      "Do keep signal yellow (#ffd400) for the single next action per band, with signal-ink text.",
+      "Do express risk with the danger / caution / clear pairs, each with an icon and a written verdict.",
+      "Do set every number in tabular numerals, identifiers in Archivo with positive tracking.",
+      "Do put a non-breaking space before « ? », « ! », « : » and « ; ».",
+      "Do use shadcn components, and `buttonVariants()` for links styled as buttons.",
+      "Do credit every Sentinel-2 image where it appears.",
+      "Do lift white cards off colored fields with the one soft offset shadow and nothing heavier."
+    ],
+    "donts": [
+      "Don't add eyebrow kickers or small uppercase labels above headings.",
+      "Don't use colored side stripes on cards, list items or alerts.",
+      "Don't put decorative icons next to headings; icons carry meaning (risk level, action direction, search) or are absent.",
+      "Don't use flag colors outside the tricolor filet and charts.",
+      "Don't use stock photography or any imagery other than credited satellite imagery.",
+      "Don't round surfaces beyond 6px or use pill-shaped buttons.",
+      "Don't use hard offset shadows or glows."
+    ]
+  }
+}
