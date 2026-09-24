@@ -66,7 +66,9 @@ export function ParcelMap({
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<MlMap | null>(null);
   const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   // Création (et recréation au changement de fond)
   useEffect(() => {
