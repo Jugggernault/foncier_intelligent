@@ -33,6 +33,18 @@ function toGeoJSON(parcels: MapParcel[], selected?: string): GeoJSON.FeatureColl
   };
 }
 
+function toPoints(parcels: MapParcel[]): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: parcels.map((p) => {
+      const ring = p.polygon.slice(0, -1);
+      const lon = ring.reduce((a, c) => a + c[0], 0) / ring.length;
+      const lat = ring.reduce((a, c) => a + c[1], 0) / ring.length;
+      return { type: "Feature", properties: { nup: p.nup, color: LEVEL_COLOR[p.level ?? "none"] }, geometry: { type: "Point", coordinates: [lon, lat] } };
+    }),
+  };
+}
+
 function bounds(parcels: MapParcel[]): [[number, number], [number, number]] {
   const xs = parcels.flatMap((p) => p.polygon.map((c) => c[0]));
   const ys = parcels.flatMap((p) => p.polygon.map((c) => c[1]));
@@ -120,6 +132,19 @@ export function ParcelMap({
             "line-dasharray": ["case", ["get", "selected"], ["literal", [1, 0]], ["literal", [2, 1.5]]],
           },
         });
+        // À petite échelle les parcelles sont invisibles : un point par parcelle jusqu'au zoom 14
+        m.addSource("points", { type: "geojson", data: toPoints(parcels) });
+        m.addLayer({
+          id: "parcels-points",
+          type: "circle",
+          source: "points",
+          maxzoom: 14,
+          paint: { "circle-radius": 5, "circle-color": ["get", "color"], "circle-stroke-color": "#06111f", "circle-stroke-width": 1.5 },
+        });
+        m.on("click", "parcels-points", (e: { features?: { properties?: Record<string, unknown> }[] }) => {
+          const nup = e.features?.[0]?.properties?.nup;
+          if (nup) onSelectRef.current?.(String(nup));
+        });
         m.on("click", "parcels-fill", (e: { features?: { properties?: Record<string, unknown> }[] }) => {
           const nup = e.features?.[0]?.properties?.nup;
           if (nup) onSelectRef.current?.(String(nup));
@@ -144,6 +169,7 @@ export function ParcelMap({
   useEffect(() => {
     const src = map.current?.getSource("parcels") as GeoJSONSource | undefined;
     src?.setData(toGeoJSON(parcels, selected));
+    (map.current?.getSource("points") as GeoJSONSource | undefined)?.setData(toPoints(parcels));
   }, [parcels, selected]);
 
   // Année d'imagerie
