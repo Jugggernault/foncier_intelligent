@@ -11,3 +11,4 @@ next-env.d.ts
 web/.impeccable/review/
 web/.impeccable/scheduled_tasks.lock
 __pycache__/
+web/public/maplibre/
