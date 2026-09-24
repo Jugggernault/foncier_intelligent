@@ -32,3 +32,6 @@ export const fmtArea = (m2: number) =>
     : `${new Intl.NumberFormat("fr-FR").format(m2)} m²`;
 
 export const fmtFcfa = (n: number) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n) + " F";
+
+/** Jours restants jusqu'à une date (0 si passée). */
+export const daysUntil = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000));
