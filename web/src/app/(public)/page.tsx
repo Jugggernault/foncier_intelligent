@@ -11,6 +11,9 @@ import { fr } from "@/i18n/fr";
 import { getImagery, listPublicityNotices } from "@/lib/data/parcels";
 import { cn } from "@/lib/utils";
 
+// Les fenêtres de publicité dépendent du jour : régénération horaire.
+export const revalidate = 3600;
+
 const TIMELINE_NUP = "101236198";
 const LEVEL_ICON = {
   danger: { Icon: ShieldAlertIcon, className: "bg-danger text-white" },

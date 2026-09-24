@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Foncier Intelligent · application web
 
-## Getting Started
+Démonstration de la plateforme décrite dans `../PRD.md` et `../SITEMAP.md` : Next.js 16 (App Router), shadcn/ui (base-nova sur Base UI), Tailwind 4, bun.
 
-First, run the development server:
+## Lancer
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install      # copie aussi le worker MapLibre dans public/maplibre (postinstall)
+bun dev          # http://localhost:3000
+bun test         # règles métier : risque, frais, éligibilité, assistant, copilote, triage, levés
+bun run lint
+bun run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Parcours de démonstration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Public** : `/` → saisir un NUP (ex. `101236198`, terrain de l'État) → `/parcelle/101236198` → rapport PDF. Aussi `/carte`, `/publicite`, `/assistant`, `/guides`, `/outils/*`.
+2. **Connexion** : « Mon espace » → « Entrer en démonstration » → choisir un profil. On change de profil depuis le menu en haut à droite.
+3. **Citoyenne** : vérifier avant d'acheter (`/espace/verifications/nouvelle`, bouton « Exemple » puis « pièces d'exemple »), déposer un dossier, faire opposition, porter plainte.
+4. **Agente ANDF** : file d'instruction triée par anomalies → poste d'instruction avec copilote (`/agent/dossiers/D-2026-04103`), empiètements, pré-tracé IA, qualité du cadastre.
+5. **Pro** : mutation avec contrôle du prix (notaire), import de levé avec contrôle de chevauchement (géomètre, bouton « Exemple »), garanties (banque).
+6. **Commune, pilotage, administration** : médiations et PV, assiette TFU, indicateurs nationaux, graphe anti-blanchiment, qualité et équité de l'IA, état des intégrations.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Données
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Réelles** : 5 parcelles issues des avis de publicité foncière ANDF, imagerie Sentinel-2 (EOX, CC BY-NC-SA, démo non commerciale), fond OpenFreeMap, barème des frais et règles d'accès au foncier.
+- **Simulées** : tout le reste, généré de façon déterministe dans `src/lib/data/`. Chaque module expose la même interface que la future source réelle ; le plan de branchement est dans `../DATA_SOURCES.md` § 7.
+- Les raccourcis assumés sont marqués `ponytail:` dans le code (`grep -rn "ponytail:" src`).

@@ -7,6 +7,9 @@ import { ItemGroup } from "@/components/ui/item";
 import { isPublicityOpen, listPublicityNotices } from "@/lib/data/parcels";
 import { daysUntil, fmtDate } from "@/lib/labels";
 
+// Les fenêtres de publicité dépendent du jour : régénération horaire.
+export const revalidate = 3600;
+
 export const metadata: Metadata = { title: "Publicité foncière · Foncier Intelligent" };
 
 export default function PublicityPage() {

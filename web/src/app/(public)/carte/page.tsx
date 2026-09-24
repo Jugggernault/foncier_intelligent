@@ -4,6 +4,9 @@ import { isPublicityOpen, listParcels } from "@/lib/data/parcels";
 import { fmtArea, rightLabel } from "@/lib/labels";
 import { assess } from "@/lib/risk";
 
+// Les fenêtres de publicité dépendent du jour : régénération horaire.
+export const revalidate = 3600;
+
 export const metadata: Metadata = { title: "Carte des parcelles · Foncier Intelligent" };
 
 export default function MapPage() {
