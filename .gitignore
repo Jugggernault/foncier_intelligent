@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.vercel
+.claude/
+web/.impeccable/review/
+web/.impeccable/scheduled_tasks.lock
+__pycache__/
