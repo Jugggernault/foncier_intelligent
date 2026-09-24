@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
-import { VerificationWizard } from "./verification-wizard";
+import { VerificationWizard } from "@/components/app/verification-wizard";
 
 export const metadata: Metadata = { title: "Vérifier avant d'acheter · Foncier Intelligent" };
 
