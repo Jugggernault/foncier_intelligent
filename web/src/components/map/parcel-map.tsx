@@ -77,6 +77,12 @@ export function ParcelMap({
 }) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<MlMap | null>(null);
+  const parcelsRef = useRef(parcels);
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    parcelsRef.current = parcels;
+    selectedRef.current = selected;
+  }, [parcels, selected]);
   const onSelectRef = useRef(onSelect);
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -115,6 +121,8 @@ export function ParcelMap({
       });
       m.addControl(new ml.NavigationControl({ showCompass: false }), "top-right");
       m.on("load", () => {
+        // Attribution repliée par défaut (bouton ⓘ) pour ne pas masquer la parcelle
+        m.getContainer().querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
         m.addSource("parcels", { type: "geojson", data: toGeoJSON(parcels, selected) });
         m.addLayer({
           id: "parcels-fill",
@@ -153,7 +161,17 @@ export function ParcelMap({
         m.on("mouseleave", "parcels-fill", () => (m.getCanvas().style.cursor = ""));
       });
       map.current = m;
-      ro = new ResizeObserver(() => m.resize());
+      // Recadrage quand le conteneur prend sa vraie taille (panneaux redimensionnables, onglets…)
+      let lastW = 0;
+      ro = new ResizeObserver(() => {
+        m.resize();
+        const w = el.current?.clientWidth ?? 0;
+        if (w > 0 && Math.abs(w - lastW) > 40 && parcelsRef.current.length) {
+          const focus = parcelsRef.current.find((x) => x.nup === selectedRef.current);
+          m.fitBounds(bounds(focus ? [focus] : parcelsRef.current), { padding, maxZoom, duration: 0 });
+        }
+        lastW = w;
+      });
       ro.observe(el.current);
     })();
     return () => {
