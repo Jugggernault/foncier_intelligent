@@ -48,7 +48,8 @@ export function citizenAlerts(): CitizenAlert[] {
   for (const l of LITIGES.filter((l) => OWNED.some((p) => p.nup === l.nup))) {
     out.push({ id: `lit-${l.id}`, date: l.opened, kind: "litige", title: `Litige ${l.id}`, text: l.nextStep ? `${l.nextStep.label} prévue le ${l.nextStep.date}.` : l.summary, href: `/espace/litiges/${l.id}`, unread: false });
   }
-  return out.sort((a, b) => b.date.localeCompare(a.date));
+  const unique = [...new Map(out.map((a) => [a.id, a])).values()];
+  return unique.sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export const myLitiges = () => LITIGES.filter((l) => OWNED.some((p) => p.nup === l.nup));

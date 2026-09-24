@@ -6,12 +6,13 @@ import { MapPinIcon, SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
-import type { NavGroup } from "@/lib/personas";
+import { NAV, type Space } from "@/lib/personas";
 
 type Hit = { nup: string; place: string };
 
 /** Palette ⌘K : pages de l'espace et parcelles par NUP ou lieu. */
-export function CommandMenu({ nav, parcels }: { nav: NavGroup[]; parcels: Hit[] }) {
+export function CommandMenu({ space, parcels }: { space: Space; parcels: Hit[] }) {
+  const nav = NAV[space];
   const router = useRouter();
   const [open, setOpen] = useState(false);
 

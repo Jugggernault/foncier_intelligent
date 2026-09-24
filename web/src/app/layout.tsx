@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${archivo.variable} ${figtree.variable} h-full antialiased`}>
+    <html lang="fr" data-scroll-behavior="smooth" className={`${archivo.variable} ${figtree.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
