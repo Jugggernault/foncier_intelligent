@@ -71,6 +71,7 @@ export function ParcelMap({
   // Création (et recréation au changement de fond)
   useEffect(() => {
     let cancelled = false;
+    let ro: ResizeObserver | undefined;
     (async () => {
       const ml = await import("maplibre-gl");
       // ponytail: worker copié par le postinstall (Turbopack ne sait pas bundler le module worker de MapLibre 6)
@@ -125,9 +126,12 @@ export function ParcelMap({
         m.on("mouseleave", "parcels-fill", () => (m.getCanvas().style.cursor = ""));
       });
       map.current = m;
+      ro = new ResizeObserver(() => m.resize());
+      ro.observe(el.current);
     })();
     return () => {
       cancelled = true;
+      ro?.disconnect();
       map.current?.remove();
       map.current = null;
     };

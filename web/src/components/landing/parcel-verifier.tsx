@@ -167,7 +167,7 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const result = assess(parcel);
   const style = LEVEL_STYLE[result.level];
   const Icon = style.icon;
-  const place = [parcel.quartier, parcel.arrondissement, parcel.commune].filter(Boolean).join(" · ");
+  const place = [...new Set([parcel.quartier, parcel.arrondissement, parcel.commune])].join(" · ");
   const side = imagery && parcel.areaM2 ? Math.sqrt(parcel.areaM2) / imagery.metersPerPixel : 0;
 
   return (

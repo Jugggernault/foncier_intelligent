@@ -164,8 +164,8 @@ function generate(count: number, now: number): Parcel[] {
     const roll = rnd();
     const right: RightType = roll < 0.08 ? "etat" : roll < 0.52 ? "titre" : "presume";
     const center = {
-      lat: +(place.center.lat + (rnd() - 0.5) * 0.08).toFixed(6),
-      lon: +(place.center.lon + (rnd() - 0.5) * 0.08).toFixed(6),
+      lat: +(place.center.lat + (rnd() - 0.5) * 0.035).toFixed(6),
+      lon: +(place.center.lon + (rnd() - 0.5) * 0.035).toFixed(6),
     };
     const nup = String(101300000 + Math.floor(rnd() * 90000) * 7 + i);
     const zone = rural ? "non-loti" : rnd() < 0.65 ? "loti" : "non-loti";
@@ -226,4 +226,4 @@ function generate(count: number, now: number): Parcel[] {
 }
 
 // ponytail: fenêtre de publicité relative au jour du build ; fixer DEMO_TODAY si la démo doit être rejouable à date fixe
-export const PARCELS: Parcel[] = [...REAL, ...generate(84, Date.now())];
+export const PARCELS: Parcel[] = [...REAL, ...generate(140, Date.now())];
