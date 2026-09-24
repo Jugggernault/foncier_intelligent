@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRD Foncier Intelligent</title>
+<meta name="description" content="PRD visuel — plateforme de gestion foncière augmentée par l'IA pour le Bénin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f4ee; --surface:#ffffff; --surface-2:#efe9df; --ink:#1d1b17; --muted:#6b645a; --line:#e2dacd;
+  --green:#1f7a4d; --green-soft:#dcefe4; --ochre:#c98a12; --ochre-soft:#f6e8c8; --red:#b8432f; --red-soft:#f5ddd6;
+  --blue:#2d5f8a; --blue-soft:#dbe7f2; --violet:#6b4fa0; --violet-soft:#e7e0f3; --teal:#1c7c80; --teal-soft:#d6eeee;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(60,40,10,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15140f; --surface:#1f1d17; --surface-2:#2a2720; --ink:#f1ece2; --muted:#a9a193; --line:#3a362d;
+    --green:#5cc48c; --green-soft:#1e3a2b; --ochre:#e8b24a; --ochre-soft:#3d3018; --red:#ec8a74; --red-soft:#43241d;
+    --blue:#7fb2e0; --blue-soft:#1d2e3d; --violet:#b59ce6; --violet-soft:#2e2640; --teal:#6fd0d3; --teal-soft:#183637;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15140f; --surface:#1f1d17; --surface-2:#2a2720; --ink:#f1ece2; --muted:#a9a193; --line:#3a362d;
+  --green:#5cc48c; --green-soft:#1e3a2b; --ochre:#e8b24a; --ochre-soft:#3d3018; --red:#ec8a74; --red-soft:#43241d;
+  --blue:#7fb2e0; --blue-soft:#1d2e3d; --violet:#b59ce6; --violet-soft:#2e2640; --teal:#6fd0d3; --teal-soft:#183637;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque",Inter,sans-serif;line-height:1.1;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-.02em}
+h3{font-size:1.08rem}
+p{margin:0}
+a{color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+section{padding:64px 0;border-top:1px solid var(--line)}
+.eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ochre);margin-bottom:10px}
+.lead{color:var(--muted);max-width:62ch;margin-top:10px}
+.grid{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:6px;align-items:center;height:52px;overflow-x:auto;scrollbar-width:none}
+nav .brand{font-family:"Bricolage Grotesque";font-weight:800;margin-right:10px;white-space:nowrap}
+nav a{font-size:.84rem;text-decoration:none;color:var(--muted);padding:6px 10px;border-radius:8px;white-space:nowrap}
+nav a:hover{background:var(--surface-2);color:var(--ink)}
+
+/* hero */
+.hero{padding:56px 0 48px;border:0}
+.hero h1{font-size:clamp(2.1rem,5.4vw,3.8rem);letter-spacing:-.03em;max-width:17ch}
+.hero h1 em{font-style:normal;color:var(--green)}
+.hero .lead{font-size:1.1rem}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta span{font-size:.8rem;background:var(--surface-2);padding:5px 10px;border-radius:8px;color:var(--muted)}
+.kpis{grid-template-columns:repeat(4,1fr);margin-top:36px}
+.kpi b{display:block;font-family:"Bricolage Grotesque";font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.02em}
+.kpi span{font-size:.84rem;color:var(--muted)}
+.tldr{margin-top:22px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;background:var(--green-soft);border:0}
+.tldr .ic{font-size:1.6rem}
+
+/* pains */
+.pains{grid-template-columns:repeat(3,1fr);margin-top:28px}
+.pain .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--red-soft);color:var(--red);margin-bottom:10px}
+.pain p{color:var(--muted);font-size:.9rem;margin-top:4px}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin-top:30px;position:relative}
+.tl::before{content:"";position:absolute;left:0;right:0;top:15px;height:3px;background:var(--line)}
+.tl div{position:relative;padding:34px 8px 0 0}
+.tl div::before{content:"";position:absolute;top:8px;left:0;width:17px;height:17px;border-radius:50%;background:var(--surface);border:3px solid var(--green)}
+.tl div.now::before{background:var(--ochre);border-color:var(--ochre)}
+.tl b{display:block;font-family:"Bricolage Grotesque";font-size:1.05rem}
+.tl span{font-size:.82rem;color:var(--muted);display:block}
+.assets{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.assets span{background:var(--surface);border:1px solid var(--line);padding:7px 12px;border-radius:10px;font-size:.86rem}
+.assets span b{color:var(--green)}
+.callout{margin-top:22px;border-left:4px solid var(--ochre);background:var(--ochre-soft);border-radius:0 12px 12px 0;padding:14px 18px;font-size:.95rem}
+
+/* architecture */
+.arch{display:grid;gap:10px;margin-top:28px}
+.layer{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:stretch}
+.layer>.lbl{display:flex;align-items:center;font-weight:600;font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.layer .row{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border-radius:12px;border:1px dashed var(--line)}
+.layer .row span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.85rem}
+.layer.ai .row{background:var(--violet-soft);border:1px solid var(--violet)}
+.layer.ai .row span{border-color:transparent}
+.layer.ai>.lbl{color:var(--violet)}
+.layer.data .row{background:var(--surface-2)}
+
+/* personas */
+.personas{grid-template-columns:repeat(4,1fr);margin-top:28px}
+.persona .face{font-size:1.7rem}
+.persona h3{margin-top:6px}
+.persona p{font-size:.86rem;color:var(--muted);margin-top:4px}
+.persona .want{margin-top:10px;font-size:.84rem;background:var(--surface-2);border-radius:8px;padding:8px 10px}
+
+/* AI section */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.legend button{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:99px;cursor:pointer}
+.legend button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.t-vision{background:var(--teal-soft);color:var(--teal)}
+.t-llm{background:var(--violet-soft);color:var(--violet)}
+.t-ml{background:var(--blue-soft);color:var(--blue)}
+.t-reco{background:var(--ochre-soft);color:var(--ochre)}
+.t-graph{background:var(--red-soft);color:var(--red)}
+.ph{background:var(--surface-2);color:var(--muted)}
+.ph.mvp{background:var(--green-soft);color:var(--green)}
+.aigrid{grid-template-columns:repeat(3,1fr);margin-top:18px}
+.ai-card{display:flex;flex-direction:column;gap:8px}
+.ai-card .top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ai-card .num{font-family:"Bricolage Grotesque";font-weight:800;color:var(--muted);font-size:.9rem;margin-right:2px}
+.ai-card p{font-size:.88rem;color:var(--muted)}
+.ai-card .gain{margin-top:auto;font-size:.85rem;font-weight:600;padding-top:8px;border-top:1px solid var(--line)}
+.ai-card .who{font-size:.78rem;color:var(--muted)}
+.dots{letter-spacing:2px;color:var(--green);font-size:.8rem}
+.matrix-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:28px;align-items:start}
+#matrix{width:100%;height:auto;display:block}
+#matrix text{font-family:Inter,sans-serif}
+.noai{background:var(--surface-2);box-shadow:none}
+.noai ul{margin:10px 0 0;padding-left:18px;font-size:.9rem}
+.noai li{margin:4px 0}
+.rule{font-family:"Bricolage Grotesque";font-size:1.25rem;margin-top:14px}
+
+/* satellite */
+.sat{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:28px;align-items:start}
+.fiche header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fiche .nup{font-family:"Bricolage Grotesque";font-weight:700;font-size:1.15rem}
+.frames{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.frames figure{margin:0}
+.frames svg{width:100%;height:auto;border-radius:8px;display:block}
+.frames figcaption{font-size:.74rem;color:var(--muted);text-align:center;margin-top:4px}
+.ind{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.ind div{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:.84rem}
+.ind b{display:block;font-size:1.05rem}
+.alert{margin-top:12px;background:var(--red-soft);color:var(--red);border-radius:10px;padding:10px 12px;font-size:.86rem;font-weight:500}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.tbl{overflow-x:auto}
+.warn{margin-top:12px;font-size:.84rem;color:var(--muted)}
+.warn b{color:var(--ink)}
+
+/* journey */
+.journey{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+.journey .card h3{display:flex;align-items:center;gap:8px}
+.steps{list-style:none;margin:14px 0 0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 14px 40px;font-size:.9rem}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.78rem;font-weight:700;background:var(--surface-2)}
+.steps li:not(:last-child)::after{content:"";position:absolute;left:12px;top:26px;bottom:2px;width:2px;background:var(--line)}
+.before li::before{background:var(--red-soft);color:var(--red)}
+.after li::before{background:var(--green-soft);color:var(--green)}
+.steps .ai{font-size:.72rem;margin-left:4px}
+.total{margin-top:6px;font-weight:700;font-family:"Bricolage Grotesque";font-size:1.15rem}
+.before .total{color:var(--red)} .after .total{color:var(--green)}
+
+/* scope + roadmap */
+.scope{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+.scope ul{margin:10px 0 0;padding-left:18px;font-size:.88rem}
+.scope li{margin:5px 0}
+.scope .in{border-top:4px solid var(--green)}
+.scope .next{border-top:4px solid var(--ochre)}
+.scope .out{border-top:4px solid var(--line)}
+.road{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:28px}
+.road>div{padding:16px;border:1px solid var(--line);background:var(--surface);position:relative}
+.road>div:first-child{border-radius:14px 0 0 14px}
+.road>div:last-child{border-radius:0 14px 14px 0}
+.road>div+div{border-left:0}
+.road .when{font-size:.75rem;font-weight:600;color:var(--ochre);text-transform:uppercase;letter-spacing:.08em}
+.road h3{margin:4px 0 8px}
+.road ul{margin:0;padding-left:16px;font-size:.85rem;color:var(--muted)}
+.road li{margin:3px 0}
+.road .bar{height:5px;border-radius:3px;margin-top:12px;background:var(--green)}
+
+/* kpis */
+.kgrid{grid-template-columns:repeat(4,1fr);margin-top:28px}
+.k .from{font-size:.82rem;color:var(--muted);text-decoration:line-through}
+.k .to{font-family:"Bricolage Grotesque";font-size:1.7rem;font-weight:800;color:var(--green);letter-spacing:-.02em}
+.k p{font-size:.84rem;color:var(--muted);margin-top:2px}
+
+/* guardrails + risks */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+.gr{list-style:none;padding:0;margin:12px 0 0}
+.gr li{display:grid;grid-template-columns:28px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.gr li:last-child{border:0}
+.lvl{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px}
+.lvl.h{background:var(--red-soft);color:var(--red)} .lvl.m{background:var(--ochre-soft);color:var(--ochre)}
+
+footer{padding:40px 0 60px;border-top:1px solid var(--line);font-size:.84rem;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+
+@media (max-width:900px){
+  .kpis,.kgrid,.personas{grid-template-columns:repeat(2,1fr)}
+  .pains,.aigrid,.scope{grid-template-columns:1fr 1fr}
+  .matrix-wrap,.sat,.journey,.two{grid-template-columns:1fr}
+  .road{grid-template-columns:1fr 1fr;gap:10px}
+  .road>div,.road>div:first-child,.road>div:last-child{border-radius:14px;border-left:1px solid var(--line)}
+  .tl{grid-template-columns:1fr;gap:0}
+  .tl::before{left:7px;right:auto;top:0;bottom:0;width:3px;height:auto}
+  .tl div{padding:0 0 16px 30px}
+  .tl div::before{top:2px}
+  .layer{grid-template-columns:1fr;gap:4px}
+}
+@media (max-width:560px){
+  .pains,.aigrid,.scope,.road,.personas{grid-template-columns:1fr}
+  section{padding:48px 0}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">🌍 Foncier Intelligent</span>
+  <a href="#probleme">Problème</a><a href="#existant">Existant</a><a href="#solution">Solution</a>
+  <a href="#personas">Utilisateurs</a><a href="#ia">IA</a><a href="#satellite">Satellite</a>
+  <a href="#parcours">Parcours</a><a href="#mvp">MVP</a><a href="#roadmap">Roadmap</a><a href="#kpi">KPI</a><a href="#garde-fous">Garde-fous</a>
+</div></nav>
+
+<!-- HERO -->
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Product Requirements Document · v1.0 · Septembre 2026</div>
+  <h1>Le foncier béninois, <em>vérifiable en 30 secondes</em> depuis un téléphone.</h1>
+  <p class="lead">Une couche d'intelligence artificielle posée sur les briques numériques déjà construites par l'ANDF (NUP, e-Foncier, PNS) pour sécuriser chaque transaction, surveiller chaque terrain et accélérer chaque dossier.</p>
+  <div class="meta">
+    <span>👥 UDI-AFRICA — 1<sup>er</sup> prix Hackathon IA « Foncier Intelligent » (ASIN · ANDF · LuxDev)</span>
+    <span>🏛️ Partenaires cibles : ANDF, ASIN, MEF, communes</span>
+    <span>📄 Détail complet : PRD.md</span>
+  </div>
+  <div class="grid kpis">
+    <div class="card kpi"><b>532 668</b><span>parcelles déjà enregistrées au cadastre</span></div>
+    <div class="card kpi"><b>1,5 M</b><span>parcelles à cartographier (Terra Benin)</span></div>
+    <div class="card kpi"><b>120 j</b><span>délai actuel d'un titre foncier</span></div>
+    <div class="card kpi"><b>180,7 M$</b><span>financement Banque mondiale 2025</span></div>
+  </div>
+  <div class="card tldr">
+    <div class="ic">⚡</div>
+    <div><b>En une phrase :</b> on ne reconstruit pas le cadastre — on le rend <b>intelligent</b>. Chaque parcelle (NUP) reçoit une fiche vivante : statut juridique, image satellite, score de risque, valeur estimée. Les agents reçoivent un copilote, les citoyens un assistant, l'État des alertes.</div>
+  </div>
+</div></header>
+
+<!-- PROBLEME -->
+<section id="probleme"><div class="wrap">
+  <div class="eyebrow">01 · Le problème</div>
+  <h2>Acheter un terrain reste un pari.</h2>
+  <p class="lead">Le Code foncier (2013) et la digitalisation de 2025 ont posé les rails. Il manque la capacité à <b>vérifier, surveiller et anticiper</b>.</p>
+  <div class="grid pains">
+    <div class="card pain"><div class="ic">🎭</div><h3>Fraudes & ventes multiples</h3><p>Une même parcelle vendue à plusieurs acheteurs, faux documents de présomption.</p></div>
+    <div class="card pain"><div class="ic">⚖️</div><h3>Litiges interminables</h3><p>Conflits de limites, contestations de droits, conflits agriculteurs-éleveurs.</p></div>
+    <div class="card pain"><div class="ic">🙈</div><h3>Achat « à l'aveugle »</h3><p>Personne ne sait ce qu'il y a réellement sur le terrain sans s'y rendre.</p></div>
+    <div class="card pain"><div class="ic">🏗️</div><h3>Empiètements</h3><p>Occupations illégales du domaine de l'État, des forêts classées, des zones inondables.</p></div>
+    <div class="card pain"><div class="ic">📂</div><h3>Dossiers incomplets</h3><p>Allers-retours au guichet, 120 jours pour un titre foncier, archives papier fragiles.</p></div>
+    <div class="card pain"><div class="ic">🌾</div><h3>Rural sous-couvert</h3><p>12 communes numérisées sur 77. Spéculation et blanchiment sur les grandes surfaces.</p></div>
+  </div>
+</div></section>
+
+<!-- EXISTANT -->
+<section id="existant"><div class="wrap">
+  <div class="eyebrow">02 · Ce qui existe déjà</div>
+  <h2>On part de loin… mais pas de zéro.</h2>
+  <div class="tl">
+    <div><b>2013</b><span>Code foncier et domanial, création de l'ANDF</span></div>
+    <div><b>2019</b><span>Prestations du cadastre en ligne, commission des plaintes (CGP)</span></div>
+    <div><b>Août 2023</b><span>Fin de la période transitoire : transactions via notaire</span></div>
+    <div><b>Janv. 2025</b><span>e-Foncier obligatoire dans 12 communes, paiement MoMo/Visa</span></div>
+    <div><b>Avr. 2025</b><span>Décret 2025-176 : Numéro Unique Parcellaire (NUP)</span></div>
+    <div><b>Sept. 2025</b><span>Hackathon IA « Foncier Intelligent »</span></div>
+    <div class="now"><b>2026 →</b><span>Couche IA sur l'existant</span></div>
+  </div>
+  <div class="assets">
+    <span><b>✓</b> NUP par parcelle</span><span><b>✓</b> cadastre.andf.bj/nup/…</span><span><b>✓</b> Portail PNS + identifiant NPI</span>
+    <span><b>✓</b> E-Notaire</span><span><b>✓</b> Orthophoto 20 cm</span><span><b>✓</b> Paiement MoMo / Visa</span>
+    <span><b>✓</b> Avis de publicité foncière en ligne</span><span><b>✓</b> 434 789 parcelles levées sur le terrain</span>
+  </div>
+  <div class="callout">🎯 <b>Principe produit :</b> s'intégrer, pas remplacer. Le registre de l'ANDF reste la source de vérité. Notre plateforme la lit via API, l'enrichit, et renvoie des alertes et des dossiers pré-vérifiés.</div>
+</div></section>
+
+<!-- SOLUTION -->
+<section id="solution"><div class="wrap">
+  <div class="eyebrow">03 · La solution</div>
+  <h2>Une plateforme, cinq couches.</h2>
+  <p class="lead">Les modules métier du rapport de recherche (cadastre, registre, transactions, litiges, paiement) + une couche IA transverse.</p>
+  <div class="arch">
+    <div class="layer"><div class="lbl">📱 Canaux</div><div class="row">
+      <span>Web citoyen</span><span>App mobile (hors-ligne)</span><span>WhatsApp / USSD / voix</span><span>Poste agent ANDF & BCDF</span><span>Espace notaire / géomètre</span><span>Tableau de bord décideur</span></div></div>
+    <div class="layer"><div class="lbl">🧩 Modules métier</div><div class="row">
+      <span>Cadastre & carte</span><span>Registre & titres</span><span>Transactions & mutations</span><span>Publicité foncière</span><span>Litiges & plaintes</span><span>Domaine de l'État</span><span>Terres rurales & préemption</span><span>Paiements & frais</span><span>Fiscalité TFU</span></div></div>
+    <div class="layer ai"><div class="lbl">✨ Couche IA</div><div class="row">
+      <span>👁️ Vision satellite & ortho</span><span>📄 Lecture de documents</span><span>💬 Assistants LLM (RAG juridique)</span><span>📈 Scores & estimations</span><span>🕸️ Graphe anti-fraude</span><span>🎯 Recommandation</span></div></div>
+    <div class="layer data"><div class="lbl">🗄️ Données</div><div class="row">
+      <span>PostGIS · modèle ISO 19152 (LADM)</span><span>Clé pivot : NUP</span><span>Séries d'images</span><span>Base vectorielle (textes de loi)</span><span>Journal d'audit infalsifiable</span></div></div>
+    <div class="layer"><div class="lbl">🔌 Intégrations</div><div class="row">
+      <span>ANDF e-Foncier</span><span>PNS / NPI</span><span>E-Notaire</span><span>MTN MoMo · Moov · Visa</span><span>DGI (TFU)</span><span>IGN</span><span>Justice</span><span>Google Earth Engine</span></div></div>
+  </div>
+</div></section>
+
+<!-- PERSONAS -->
+<section id="personas"><div class="wrap">
+  <div class="eyebrow">04 · Pour qui</div>
+  <h2>Huit utilisateurs, une même fiche parcelle.</h2>
+  <div class="grid personas">
+    <div class="card persona"><div class="face">🧑🏾‍💼</div><h3>Acheteur</h3><p>Citoyen, diaspora, investisseur</p><div class="want">« Ce terrain est-il sûr, et à quel prix ? »</div></div>
+    <div class="card persona"><div class="face">👩🏾‍🌾</div><h3>Propriétaire</h3><p>Urbain ou détenteur coutumier</p><div class="want">« Préviens-moi si quelqu'un touche à ma parcelle. »</div></div>
+    <div class="card persona"><div class="face">🧑🏾‍⚖️</div><h3>Notaire</h3><p>Seul habilité aux mutations</p><div class="want">« Un dossier propre, vérifié avant signature. »</div></div>
+    <div class="card persona"><div class="face">📐</div><h3>Géomètre</h3><p>Levés et bornage</p><div class="want">« Des limites pré-tracées à valider. »</div></div>
+    <div class="card persona"><div class="face">🗂️</div><h3>Agent ANDF / BCDF</h3><p>Instruction des dossiers</p><div class="want">« Voir tout de suite ce qui cloche. »</div></div>
+    <div class="card persona"><div class="face">🏛️</div><h3>Maire · CoGeF · SVGF</h3><p>Gestion foncière locale</p><div class="want">« Suivre ma commune et ses conflits. »</div></div>
+    <div class="card persona"><div class="face">🏦</div><h3>Banque</h3><p>Crédit hypothécaire</p><div class="want">« Une garantie fiable, une valeur crédible. »</div></div>
+    <div class="card persona"><div class="face">📊</div><h3>Décideur État</h3><p>DG ANDF, MEF, DGI</p><div class="want">« Où sont les risques, les recettes, les retards ? »</div></div>
+  </div>
+</div></section>
+
+<!-- IA -->
+<section id="ia"><div class="wrap">
+  <div class="eyebrow">05 · Là où l'IA apporte une vraie valeur</div>
+  <h2>18 usages, classés par valeur et faisabilité.</h2>
+  <p class="lead">Chaque usage répond à une douleur réelle identifiée dans les documents de l'ANDF. Filtrez par type d'IA.</p>
+
+  <div class="matrix-wrap">
+    <div class="card">
+      <h3>Matrice valeur × faisabilité</h3>
+      <p class="small muted" style="margin-top:4px">En haut à droite : à faire en premier. Les numéros renvoient aux cartes ci-dessous.</p>
+      <svg id="matrix" viewBox="0 0 520 400" role="img" aria-label="Matrice valeur faisabilité des usages IA"></svg>
+    </div>
+    <div class="card noai">
+      <h3>🚫 Là où l'IA n'a rien à faire</h3>
+      <p class="small muted" style="margin-top:4px">Pour rester crédible face à un jury comme à un DG.</p>
+      <ul>
+        <li><b>Le registre des droits</b> — source de vérité déterministe, jamais « prédite ».</li>
+        <li><b>Le calcul des frais</b> — une règle (0,3 % / 30 000 F / 0,5 %), pas un modèle.</li>
+        <li><b>Paiement et signature</b> — workflow classique, sécurisé.</li>
+        <li><b>La décision d'attribuer un droit</b> — toujours un agent assermenté.</li>
+      </ul>
+      <div class="rule">« L'IA propose, l'agent dispose. »</div>
+    </div>
+  </div>
+
+  <div class="legend" id="filters">
+    <button aria-pressed="true" data-t="all">Tout</button>
+    <button aria-pressed="false" data-t="vision">👁️ Vision / satellite</button>
+    <button aria-pressed="false" data-t="llm">💬 LLM / documents</button>
+    <button aria-pressed="false" data-t="ml">📈 ML prédictif</button>
+    <button aria-pressed="false" data-t="graph">🕸️ Graphe / fraude</button>
+    <button aria-pressed="false" data-t="reco">🎯 Recommandation</button>
+    <button aria-pressed="false" data-t="mvp">🟢 MVP seulement</button>
+  </div>
+  <div class="grid aigrid" id="aigrid"></div>
+</div></section>
+
+<!-- SATELLITE -->
+<section id="satellite"><div class="wrap">
+  <div class="eyebrow">06 · Focus satellite</div>
+  <h2>Voir le terrain sans s'y déplacer.</h2>
+  <p class="lead">Saisir un NUP → la plateforme récupère le polygone au cadastre, interroge les archives d'images et produit une <b>fiche santé parcelle</b>.</p>
+  <div class="sat">
+    <div class="card fiche">
+      <header><div><div class="small muted">Fiche santé parcelle · maquette</div><div class="nup">NUP 101236198 · Godomey, Abomey-Calavi</div></div>
+        <span class="pill" style="background:var(--ochre-soft);color:var(--ochre)">● Risque moyen</span></header>
+      <div class="frames">
+        <figure><svg viewBox="0 0 100 80"><rect width="100" height="80" fill="#8fae5c"/><circle cx="20" cy="18" r="9" fill="#5f8a3c"/><circle cx="78" cy="60" r="11" fill="#5f8a3c"/><circle cx="60" cy="20" r="7" fill="#6b9444"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/></svg><figcaption>2019 · végétation</figcaption></figure>
+        <figure><svg viewBox="0 0 100 80"><rect width="100" height="80" fill="#8fae5c"/><rect x="22" y="18" width="56" height="44" fill="#c9a877"/><circle cx="78" cy="68" r="8" fill="#5f8a3c"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/></svg><figcaption>2021 · défriché</figcaption></figure>
+        <figure><svg viewBox="0 0 100 80"><rect width="100" height="80" fill="#9cb46a"/><rect x="22" y="18" width="56" height="44" fill="#c9a877"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#6b5a45" stroke-width="2.5"/><rect x="34" y="30" width="18" height="14" fill="#a39d93"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="3 2"/></svg><figcaption>2023 · clôture + fondation</figcaption></figure>
+        <figure><svg viewBox="0 0 100 80"><rect width="100" height="80" fill="#9cb46a"/><rect x="22" y="18" width="56" height="44" fill="#c9a877"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#6b5a45" stroke-width="2.5"/><rect x="34" y="30" width="18" height="14" fill="#b8432f"/><rect x="56" y="36" width="14" height="18" fill="#d9534f"/><rect x="72" y="8" width="16" height="16" fill="#d9534f"/><rect x="22" y="18" width="56" height="44" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="3 2"/></svg><figcaption>2025 · bâti</figcaption></figure>
+      </div>
+      <div class="ind">
+        <div>🏠 Emprise bâtie<b>0 % → 18 %</b></div>
+        <div>🌿 Végétation (NDVI)<b>−62 % en 6 ans</b></div>
+        <div>💧 Inondation (radar)<b>1 épisode en 2024</b></div>
+        <div>📜 Statut juridique<b>Confirmation en cours</b></div>
+      </div>
+      <div class="alert">⚠️ Un bâtiment détecté en 2025 déborde de 4 m sur la parcelle voisine → chevauchement à vérifier avant toute vente.</div>
+    </div>
+    <div class="card">
+      <h3>Sources d'images</h3>
+      <div class="tbl"><table>
+        <tr><th>Source</th><th>Précision</th><th>Usage</th></tr>
+        <tr><td><b>Sentinel-2</b> via Earth Engine</td><td>10 m · tous les 5 j · gratuit</td><td>Végétation, défrichement, évolution</td></tr>
+        <tr><td><b>Sentinel-1</b> radar</td><td>10 m · voit à travers les nuages</td><td>Inondations, suivi en saison des pluies</td></tr>
+        <tr><td><b>Dynamic World</b> (Google)</td><td>10 m · quasi temps réel</td><td>Occupation du sol : bâti, culture, eau</td></tr>
+        <tr><td><b>Open Buildings</b> (Google)</td><td>Emprises de bâtiments · séries 2016→</td><td>Détection de nouvelles constructions</td></tr>
+        <tr><td><b>Orthophoto ANDF</b></td><td>20 cm</td><td>Limites de parcelles, contrôle fin</td></tr>
+        <tr><td><b>Drones</b> (géomètres)</td><td>&lt; 5 cm · à la demande</td><td>Litiges, bornage, zones prioritaires</td></tr>
+      </table></div>
+      <p class="warn">⚠️ <b>À 10 m, un pixel = 100 m².</b> Une parcelle urbaine de 500 m² fait 5 pixels : Sentinel sert à détecter des <b>changements</b>, pas à tracer des limites (ortho 20 cm et drones pour ça).</p>
+      <p class="warn">⚖️ <b>Licences :</b> les images Google Maps / Earth ne peuvent pas être analysées automatiquement (conditions d'utilisation). On passe par <b>Earth Engine</b> (licence gouvernementale à contractualiser) et par les données ouvertes.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- PARCOURS -->
+<section id="parcours"><div class="wrap">
+  <div class="eyebrow">07 · Parcours clé</div>
+  <h2>Acheter une parcelle : avant / après.</h2>
+  <div class="journey">
+    <div class="card before">
+      <h3>😓 Aujourd'hui</h3>
+      <ol class="steps">
+        <li>Visite du terrain, on fait confiance au vendeur</li>
+        <li>Déplacements au BCDF pour vérifier le statut</li>
+        <li>Collecte des pièces, souvent incomplètes</li>
+        <li>Notaire, dépôt, retours pour pièces manquantes</li>
+        <li>Publicité foncière : personne ne la lit</li>
+        <li>Litige découvert… après l'achat</li>
+      </ol>
+      <div class="total">Semaines à mois · risque élevé</div>
+    </div>
+    <div class="card after">
+      <h3>😊 Avec Foncier Intelligent</h3>
+      <ol class="steps">
+        <li>Saisie du NUP → fiche santé + image satellite <span class="pill t-vision ai">Vision</span></li>
+        <li>Score de risque + valeur estimée <span class="pill t-ml ai">ML</span></li>
+        <li>Photo des documents → vérifiés et pré-remplis <span class="pill t-llm ai">LLM</span></li>
+        <li>Notaire reçoit un dossier complet via E-Notaire, paiement MoMo</li>
+        <li>Riverains alertés automatiquement pendant la publicité <span class="pill t-llm ai">LLM+SIG</span></li>
+        <li>Mutation, titre numérique, suivi par SMS</li>
+      </ol>
+      <div class="total">Quelques jours · risque visible avant de payer</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- MVP -->
+<section id="mvp"><div class="wrap">
+  <div class="eyebrow">08 · Périmètre</div>
+  <h2>Ce qu'on livre d'abord.</h2>
+  <div class="scope">
+    <div class="card in"><h3>🟢 MVP (6 mois)</h3><ul>
+      <li>Fiche santé parcelle par NUP</li>
+      <li>Score de risque v1 (règles + données)</li>
+      <li>Assistant foncier WhatsApp / web</li>
+      <li>Lecture et vérification des dossiers</li>
+      <li>Veille publicité foncière + alertes SMS</li>
+      <li>Alertes empiètement sur domaine de l'État</li>
+      <li>Détection des chevauchements cadastraux</li>
+    </ul></div>
+    <div class="card next"><h3>🟡 V2 (6–18 mois)</h3><ul>
+      <li>Copilote agent ANDF / BCDF</li>
+      <li>Estimation de valeur (AVM)</li>
+      <li>Pré-vectorisation des limites (ortho)</li>
+      <li>Détection de faux documents</li>
+      <li>Assiette TFU & contrôle mise en valeur</li>
+      <li>Triage des litiges, tableau de bord DG</li>
+    </ul></div>
+    <div class="card out"><h3>⚪ Hors périmètre</h3><ul>
+      <li>Remplacer le registre ANDF</li>
+      <li>Délivrer des titres (reste ANDF)</li>
+      <li>Blockchain (le journal d'audit suffit)</li>
+      <li>Décision automatique sur un droit</li>
+      <li>Les 77 communes dès le départ</li>
+    </ul></div>
+  </div>
+</div></section>
+
+<!-- ROADMAP -->
+<section id="roadmap"><div class="wrap">
+  <div class="eyebrow">09 · Feuille de route</div>
+  <h2>36 mois, un pilote d'abord.</h2>
+  <div class="road">
+    <div><div class="when">Mois 0–3</div><h3>Cadrage</h3><ul><li>Convention ANDF / ASIN</li><li>Accès API NUP & e-Foncier</li><li>Choix commune pilote</li><li>Licence Earth Engine</li></ul><div class="bar" style="width:25%"></div></div>
+    <div><div class="when">Mois 3–9</div><h3>Pilote Abomey-Calavi</h3><ul><li>MVP complet</li><li>Forte pression foncière, zones loties/non loties</li><li>200 agents & notaires formés</li></ul><div class="bar" style="width:50%"></div></div>
+    <div><div class="when">Mois 9–18</div><h3>12 communes e-Foncier</h3><ul><li>Modules V2</li><li>Intégration DGI & Justice</li><li>Langues nationales</li></ul><div class="bar" style="width:75%"></div></div>
+    <div><div class="when">Mois 18–36</div><h3>National</h3><ul><li>Aligné sur Terra Benin (14 communes, 1,5 M parcelles)</li><li>Anti-blanchiment, recommandation</li><li>API ouverte aux banques</li></ul><div class="bar" style="width:100%"></div></div>
+  </div>
+</div></section>
+
+<!-- KPI -->
+<section id="kpi"><div class="wrap">
+  <div class="eyebrow">10 · Mesure du succès</div>
+  <h2>Ce qu'on s'engage à faire bouger.</h2>
+  <div class="grid kgrid">
+    <div class="card k"><div class="from">120 jours</div><div class="to">60 j</div><p>délai moyen d'un titre foncier</p></div>
+    <div class="card k"><div class="from">≈ 50 %*</div><div class="to">90 %</div><p>dossiers complets au premier dépôt</p></div>
+    <div class="card k"><div class="from">0</div><div class="to">&lt; 30 j</div><p>délai de détection d'un empiètement</p></div>
+    <div class="card k"><div class="from">—</div><div class="to">−30 %</div><p>litiges sur parcelles vérifiées</p></div>
+    <div class="card k"><div class="from">72 h</div><div class="to">24 h</div><p>mutation de titre foncier</p></div>
+    <div class="card k"><div class="from">—</div><div class="to">+15 %</div><p>recettes TFU des communes pilotes</p></div>
+    <div class="card k"><div class="from">—</div><div class="to">≥ 90 %</div><p>précision détection de bâti</p></div>
+    <div class="card k"><div class="from">—</div><div class="to">≥ 4/5</div><p>satisfaction des usagers</p></div>
+  </div>
+  <p class="small muted" style="margin-top:12px">* Valeurs de départ à mesurer pendant le cadrage. Les cibles sont à valider avec l'ANDF.</p>
+</div></section>
+
+<!-- GARDE-FOUS -->
+<section id="garde-fous"><div class="wrap">
+  <div class="eyebrow">11 · Confiance</div>
+  <h2>Garde-fous et risques.</h2>
+  <div class="two">
+    <div class="card"><h3>🛡️ IA responsable</h3><ul class="gr">
+      <li><span>👤</span><span><b>Humain dans la boucle</b> : aucun droit accordé ou refusé par un modèle.</span></li>
+      <li><span>🔍</span><span><b>Explicable</b> : chaque score affiche ses raisons et ses sources.</span></li>
+      <li><span>🇧🇯</span><span><b>Souveraineté</b> : hébergement au Bénin, modèles ouverts auto-hébergés pour les données sensibles.</span></li>
+      <li><span>🔐</span><span><b>Données personnelles</b> : conformité au Code du numérique et à l'APDP, accès par rôle.</span></li>
+      <li><span>⚖️</span><span><b>Équité</b> : droits coutumiers et droits des femmes protégés, biais mesurés.</span></li>
+      <li><span>🧾</span><span><b>Traçabilité</b> : chaque action et chaque suggestion IA journalisées.</span></li>
+    </ul></div>
+    <div class="card"><h3>⚠️ Principaux risques</h3>
+      <div class="tbl"><table>
+        <tr><th>Risque</th><th>Niv.</th><th>Parade</th></tr>
+        <tr><td>Accès aux données ANDF</td><td><span class="lvl h">Élevé</span></td><td>Convention dès le mois 0, portage par l'ASIN</td></tr>
+        <tr><td>Qualité des données historiques</td><td><span class="lvl h">Élevé</span></td><td>Scores de confiance, correction par les agents</td></tr>
+        <tr><td>Adoption par les agents</td><td><span class="lvl m">Moyen</span></td><td>Copilote qui fait gagner du temps, formation</td></tr>
+        <tr><td>Faux positifs satellite</td><td><span class="lvl m">Moyen</span></td><td>Alerte = vérification, jamais sanction</td></tr>
+        <tr><td>Coûts d'imagerie et de LLM</td><td><span class="lvl m">Moyen</span></td><td>Sources ouvertes, modèles ouverts, cache</td></tr>
+        <tr><td>Cybersécurité</td><td><span class="lvl m">Moyen</span></td><td>Lecture seule sur le registre, audit, 2FA agents</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Foncier Intelligent · PRD v1.0 · UDI-AFRICA</span>
+  <span>Sources : Code foncier et domanial, décret 2025-176, publications ANDF, rapport de recherche. Détail complet dans PRD.md.</span>
+</div></footer>
+
+<script>
+const T={vision:["👁️ Vision","t-vision"],llm:["💬 LLM","t-llm"],ml:["📈 ML","t-ml"],graph:["🕸️ Graphe","t-graph"],reco:["🎯 Reco","t-reco"]};
+// [titre, type, description, bénéficiaires, gain, valeur 1-3, faisabilité 1-3, phase]
+const U=[
+["Fiche santé parcelle","vision","NUP → état réel du terrain et son historique : nu, clôturé, en chantier, bâti, inondé.","Acheteurs, notaires, banques","Fin des achats à l'aveugle",3,3,"MVP"],
+["Alertes d'empiètement","vision","Nouvelle construction détectée sur le domaine de l'État, une forêt classée, une zone inondable ou une parcelle en litige.","ANDF, communes, Eaux & Forêts","Détection en semaines, pas en années",3,2.6,"MVP"],
+["Pré-tracé des limites","vision","Segmentation des parcelles sur l'orthophoto 20 cm ; le géomètre valide au lieu de dessiner.","Géomètres, cadastre ANDF","Cartographie jusqu'à 3× plus rapide",3,2,"V2"],
+["Contrôle de mise en valeur","vision","Terres rurales > 20 ha : le projet agricole approuvé est-il réellement exploité ? Suivi trimestriel.","ANDF, Agriculture","Freine la spéculation foncière",2.2,2.8,"V2"],
+["Assiette TFU","vision","Repérer les parcelles bâties non déclarées pour la Taxe Foncière Unique.","DGI, communes","Recettes fiscales locales",2.8,2.2,"V2"],
+["Risque climatique","vision","Score inondation / érosion côtière (Cotonou, Grand-Popo) à partir de l'historique radar.","Acheteurs, urbanisme, banques","Ne plus acheter en zone inondable",2.2,1.9,"V3"],
+["Lecture des dossiers","llm","Photo d'une ADC, convention, PV ou quittance → données extraites, formulaire pré-rempli, pièces manquantes signalées.","Citoyens, agents BCDF","Dossier complet au 1er dépôt",2.86,3,"MVP"],
+["Faux documents","vision","Cachets, signatures, incohérences de dates, de superficies ou d'identité (NPI).","ANDF, notaires","Moins de fraude à la présomption",2.9,1.8,"V2"],
+["Assistant foncier citoyen","llm","Répond sur le Code, les décrets et les notes (RAG). Français + fon, yoruba ; voix ; WhatsApp.","Citoyens, diaspora","Moins d'intermédiaires et de déplacements",2.7,2.9,"MVP"],
+["Copilote de l'agent","llm","Résumé du dossier, anomalies, projet d'avis et de décision. L'agent relit et signe.","Agents ANDF / BCDF","Titre foncier : 120 j → 60 j",3,2.4,"V2"],
+["Veille publicité foncière","llm","Chaque avis (15 j d'opposition) est croisé avec les parcelles voisines ; riverains alertés par SMS.","Propriétaires, riverains","Oppositions à temps = litiges évités",2.8,2.7,"MVP"],
+["Triage des litiges","llm","Classement des plaintes (CGP), cas similaires, suggestion de médiation CoGeF / SVGF.","CGP, CoGeF, justice","Litiges traités plus vite",2.2,2.2,"V2"],
+["Estimation de valeur","ml","Prix estimé par parcelle : quartier, loti / non loti, équipements, imagerie.","Acheteurs, banques, DGI","Repère les prix sous-déclarés",2.7,2,"V2"],
+["Score de risque","ml","Feu tricolore : statut juridique, litiges, chevauchements, changements au sol, historique du vendeur.","Acheteurs, notaires, banques","Fin des ventes multiples",3,2.5,"MVP"],
+["Anti-blanchiment","graph","Accumulations par fractionnement sous les seuils (2 ha, 20 ha), prête-noms, reventes rapides.","ANDF, CENTIF","Applique la mesure de déc. 2024",2.3,1.7,"V3"],
+["Recommandation","reco","Parcelles « feu vert » adaptées au budget et à la zone ; terres rurales pour projets agricoles.","Acheteurs, investisseurs","Un marché foncier plus fluide",1.8,2.1,"V3"],
+["Chevauchements cadastraux","ml","Superpositions et incohérences géométriques détectées, correction suggérée.","Cadastre ANDF","Un cadastre plus fiable",2.6,3,"MVP"],
+["Pilotage prédictif","ml","Charge par bureau, goulots d'étranglement, délais prévus : tableau de bord du DG.","Direction ANDF, MEF","Ressources là où ça bloque",1.9,2.8,"V2"]];
+
+const grid=document.getElementById("aigrid");
+const dots=n=>"●".repeat(Math.round(n))+"○".repeat(3-Math.round(n));
+grid.innerHTML=U.map((u,i)=>`<article class="card ai-card" data-t="${u[1]}" data-p="${u[7]}">
+<div class="top"><span class="num">${String(i+1).padStart(2,"0")}</span><span class="pill ${T[u[1]][1]}">${T[u[1]][0]}</span><span class="pill ph ${u[7]==="MVP"?"mvp":""}">${u[7]}</span></div>
+<h3>${u[0]}</h3><p>${u[2]}</p><div class="who">👥 ${u[3]}</div>
+<div class="small muted">Valeur <span class="dots">${dots(u[5])}</span> · Faisabilité <span class="dots">${dots(u[6])}</span></div>
+<div class="gain">→ ${u[4]}</div></article>`).join("");
+
+document.getElementById("filters").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#filters button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  const t=b.dataset.t;
+  grid.querySelectorAll(".ai-card").forEach(c=>{
+    c.style.display=(t==="all"||c.dataset.t===t||(t==="mvp"&&c.dataset.p==="MVP"))?"":"none";
+  });
+});
+
+// matrice : x = faisabilité, y = valeur (1..3)
+const svg=document.getElementById("matrix"),ns="http://www.w3.org/2000/svg";
+const X0=50,X1=500,Y0=360,Y1=20,sx=v=>X0+(v-1.5)/1.6*(X1-X0),sy=v=>Y0-(v-1.5)/1.6*(Y0-Y1);
+const col={vision:"var(--teal)",llm:"var(--violet)",ml:"var(--blue)",graph:"var(--red)",reco:"var(--ochre)"};
+const el=(n,a,txt)=>{const e=document.createElementNS(ns,n);for(const k in a)e.setAttribute(k,a[k]);if(txt)e.textContent=txt;svg.appendChild(e);return e};
+el("rect",{x:(X0+X1)/2,y:Y1,width:(X1-X0)/2,height:(Y0-Y1)/2,fill:"var(--green-soft)",rx:8});
+el("line",{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:"var(--line)"});el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--line)"});
+el("line",{x1:(X0+X1)/2,y1:Y0,x2:(X0+X1)/2,y2:Y1,stroke:"var(--line)","stroke-dasharray":"4 4"});
+el("line",{x1:X0,y1:(Y0+Y1)/2,x2:X1,y2:(Y0+Y1)/2,stroke:"var(--line)","stroke-dasharray":"4 4"});
+el("text",{x:X1-8,y:(Y0+Y1)/2-8,"text-anchor":"end","font-size":12,"font-weight":600,fill:"var(--green)"},"Quick wins");
+el("text",{x:(X0+X1)/2,y:392,"text-anchor":"middle","font-size":12,fill:"var(--muted)"},"Faisabilité →");
+el("text",{x:16,y:(Y0+Y1)/2,"text-anchor":"middle","font-size":12,fill:"var(--muted)",transform:`rotate(-90 16 ${(Y0+Y1)/2})`},"Valeur →");
+U.forEach((u,i)=>{
+  const x=sx(u[6]),y=sy(u[5]);
+  const g=el("circle",{cx:x,cy:y,r:13,fill:col[u[1]],opacity:.9});
+  const t=el("title",{});t.textContent=u[0];g.appendChild(t);
+  el("text",{x,y:y+4,"text-anchor":"middle","font-size":11,"font-weight":700,fill:"var(--surface)"},String(i+1));
+});
+</script>
+</body>
+</html>
