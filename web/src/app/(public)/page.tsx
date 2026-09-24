@@ -3,8 +3,6 @@ import Link from "next/link";
 import { ArrowRightIcon, ScaleIcon, ShieldAlertIcon, ShieldCheckIcon, ShieldQuestionIcon } from "lucide-react";
 import { FeeCalculator } from "@/components/landing/fee-calculator";
 import { ParcelVerifier, VerifyAgain } from "@/components/landing/parcel-verifier";
-import { SiteFooter } from "@/components/site/site-footer";
-import { SiteHeader } from "@/components/site/site-header";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
@@ -27,13 +25,11 @@ const fmtArea = (m2?: number) =>
 
 export default function Home() {
   const years = getImagery(TIMELINE_NUP)?.years ?? [];
-  const notices = listPublicityNotices();
+  const notices = listPublicityNotices().slice(0, 5);
   const today = new Date().toISOString().slice(0, 10);
 
   return (
     <>
-      <SiteHeader />
-      <main className="flex-1">
         {/* Premier écran : la vérification elle-même */}
         <section id="top" className="bg-navy" aria-label="Vérifier une parcelle">
           <ParcelVerifier />
@@ -147,7 +143,7 @@ export default function Home() {
               <h3 className="font-display text-base font-bold tracking-normal text-navy">{fr.publicity.listTitle}</h3>
               <ItemGroup className="mt-4 gap-2">
                 {notices.map((n) => {
-                  const open = today <= n.procedure.publicity.end;
+                  const open = today <= n.procedure!.publicity.end;
                   const place = [n.quartier, n.commune].filter(Boolean).join(", ") || fr.publicity.unknownPlace;
                   return (
                     <Item key={n.nup} className="bg-white" render={<Link href={`/publicite/${n.nup}`} />}>
@@ -165,7 +161,7 @@ export default function Home() {
                           {open ? fr.publicity.open : fr.publicity.closed}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {fr.publicity.until} {fmtDate(n.procedure.publicity.end)}
+                          {fr.publicity.until} {fmtDate(n.procedure!.publicity.end)}
                         </span>
                       </ItemActions>
                     </Item>
@@ -294,8 +290,6 @@ export default function Home() {
             <VerifyAgain />
           </div>
         </section>
-      </main>
-      <SiteFooter />
     </>
   );
 }

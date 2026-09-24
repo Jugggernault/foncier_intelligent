@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ArrowRightIcon,
   ExternalLinkIcon,
-  MapPinOffIcon,
   SearchIcon,
   ShieldAlertIcon,
   ShieldCheckIcon,
@@ -20,6 +19,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { fr } from "@/i18n/fr";
 import { NUP_PATTERN, cadastreUrl, getImagery, getParcel, type Parcel } from "@/lib/data/parcels";
 import { assess, type RiskLevel } from "@/lib/risk";
+import { ParcelMap } from "@/components/map/parcel-map";
+import { procedureLabel, rightLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 export const VERIFY_EVENT = "fi:verify-nup";
@@ -161,7 +162,8 @@ export function ParcelVerifier() {
 
 function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const imagery = getImagery(parcel.nup);
-  const [year, setYear] = useState(imagery?.years.at(-1) ?? 2024);
+  const years = imagery?.years ?? [2016, 2018, 2020, 2022, 2024];
+  const [year, setYear] = useState(years.at(-1)!);
   const result = assess(parcel);
   const style = LEVEL_STYLE[result.level];
   const Icon = style.icon;
@@ -179,9 +181,9 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
         <Badge variant="secondary" className="rounded-sm">{v.sample}</Badge>
       </header>
 
-      {imagery ? (
-        <figure className="relative max-lg:order-2">
-          <div className="relative aspect-[16/10] overflow-hidden bg-navy-ink">
+      <figure className="relative max-lg:order-2">
+        <div className="relative aspect-[16/10] overflow-hidden bg-navy-ink">
+          {imagery ? (
             <svg
               key={year}
               viewBox="96 204 576 360"
@@ -203,6 +205,15 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
               />
               <circle cx="384" cy="384" r="5" fill="var(--signal)" stroke="#06111f" strokeWidth="2" />
             </svg>
+          ) : (
+            <ParcelMap
+              parcels={[{ nup: parcel.nup, polygon: parcel.polygon, level: result.level }]}
+              selected={parcel.nup}
+              year={year}
+              padding={80}
+              label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
+            />
+          )}
             <div
               key={`scan-${parcel.nup}`}
               aria-hidden="true"
@@ -213,7 +224,7 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
             </span>
           </div>
           <figcaption className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3 sm:px-6">
-            <span className="max-w-[18rem] text-xs text-muted-foreground">{v.footprint}</span>
+            <span className="max-w-[18rem] text-xs text-muted-foreground">{imagery ? v.footprint : v.footprintLive}</span>
             <ToggleGroup
               value={[String(year)]}
               onValueChange={(val) => val[0] && setYear(Number(val[0]))}
@@ -222,32 +233,22 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
               variant="outline"
               aria-label="Année de l'image"
             >
-              {imagery.years.map((y) => (
+              {years.map((y) => (
                 <ToggleGroupItem key={y} value={String(y)} className="tabular px-2.5 data-pressed:bg-navy data-pressed:text-white">
                   {y}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
           </figcaption>
-        </figure>
-      ) : (
-        <div className="flex aspect-[16/10] flex-col items-center justify-center gap-3 border-y bg-sky px-8 text-center max-lg:order-2">
-          <MapPinOffIcon className="size-8 text-navy/50" />
-          <p className="font-display font-bold text-navy">{v.noImagery}</p>
-          <p className="max-w-xs text-sm text-muted-foreground">{v.noImageryHint}</p>
-        </div>
-      )}
+      </figure>
 
       <dl className="grid grid-cols-2 max-lg:order-3 gap-x-6 gap-y-3 px-5 py-4 text-sm sm:px-6">
         <Fact label={v.facts.owner} value={parcel.owner.kind === "state" ? v.ownerState : v.ownerPrivate} />
         <Fact label={v.facts.area} value={parcel.areaM2 ? fmtArea(parcel.areaM2) : "—"} />
-        <Fact
-          label={v.facts.procedure}
-          value={`${parcel.procedure.kind === "titre" ? v.procedureTitre : v.procedureConfirmation} n° ${parcel.procedure.requestNumber}`}
-        />
+        <Fact label={v.facts.procedure} value={parcel.procedure ? procedureLabel(parcel.procedure) : rightLabel(parcel)} />
         <Fact
           label={v.facts.publicity}
-          value={`${fmtDate(parcel.procedure.publicity.start)} → ${fmtDate(parcel.procedure.publicity.end)}`}
+          value={parcel.procedure ? `${fmtDate(parcel.procedure.publicity.start)} → ${fmtDate(parcel.procedure.publicity.end)}` : v.noPublicity}
         />
       </dl>
 
