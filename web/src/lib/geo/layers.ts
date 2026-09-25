@@ -51,10 +51,16 @@ export type LayerInfo = { id: string; label: string; category: string; severity:
 export async function listLayers(): Promise<LayerInfo[]> {
   const sql = db();
   if (!sql) return [];
-  return sql<LayerInfo[]>`
-    select l.id, l.label, l.category, l.severity, l.description, count(f.id)::int as count
-    from layers l left join layer_features f on f.layer_id = l.id
-    group by l.id order by case l.severity when 'danger' then 0 when 'caution' then 1 else 2 end, l.label`;
+  try {
+    return await sql<LayerInfo[]>`
+      select l.id, l.label, l.category, l.severity, l.description, count(f.id)::int as count
+      from layers l left join layer_features f on f.layer_id = l.id
+      group by l.id order by case l.severity when 'danger' then 0 when 'caution' then 1 else 2 end, l.label`;
+  } catch (e) {
+    // Base vide ou injoignable : la carte s'affiche sans couches plutôt que de casser le build
+    console.error("listLayers", e);
+    return [];
+  }
 }
 
 export async function layerTile(layer: string, z: number, x: number, y: number): Promise<Uint8Array | undefined> {
