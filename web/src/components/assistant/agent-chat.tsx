@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithApprovalResponses } from "ai";
-import { ArrowRightIcon, ArrowUpIcon, CheckCircle2Icon, InfoIcon, PaperclipIcon, ScaleIcon, XCircleIcon } from "lucide-react";
+import { ArrowRightIcon, ArrowUpIcon, CheckCircle2Icon, InfoIcon, MicIcon, PaperclipIcon, ScaleIcon, Volume2Icon, XCircleIcon } from "lucide-react";
 import { ParcelMap } from "@/components/map/parcel-map";
 import { LEVEL } from "@/components/parcel/verdict";
 import { Badge } from "@/components/ui/badge";
@@ -225,6 +225,21 @@ function ToolCard({ part, onApprove }: { part: Part; onApprove: (id: string, app
   return null;
 }
 
+// Voix : API natives du navigateur (dictée et lecture à voix haute), rien à héberger.
+// ponytail: français seulement ; fon/yoruba demanderont un modèle dédié (ex. Whisper affiné) côté serveur.
+type Recognition = { lang: string; interimResults: boolean; start(): void; onresult: (e: { results: { 0: { transcript: string } }[] }) => void; onend: () => void };
+const recognitionCtor = () =>
+  typeof window === "undefined" ? undefined : ((window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => Recognition }).webkitSpeechRecognition);
+
+const noop = () => () => {};
+
+function speak(text: string) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/[*#_`]/g, ""));
+  u.lang = "fr-FR";
+  speechSynthesis.speak(u);
+}
+
 export function AgentChat({ initial }: { initial?: string }) {
   const { messages, sendMessage, status, error, addToolApprovalResponse } = useChat<IlemiMessage>({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -232,15 +247,32 @@ export function AgentChat({ initial }: { initial?: string }) {
   });
   const [draft, setDraft] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [listening, setListening] = useState(false);
+  const canDictate = useSyncExternalStore(noop, () => !!recognitionCtor(), () => false);
+
+  function dictate() {
+    const Ctor = recognitionCtor();
+    if (!Ctor) return;
+    const r = new Ctor();
+    r.lang = "fr-FR";
+    r.interimResults = false;
+    r.onresult = (e) => send(e.results[0][0].transcript);
+    r.onend = () => setListening(false);
+    setListening(true);
+    r.start();
+  }
   const end = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const busy = status === "submitted" || status === "streaming" || uploading;
 
+  // Question venue de l'accueil (?q=). Différée : le double montage de StrictMode annule le premier envoi.
   useEffect(() => {
-    if (initial && !started.current) {
+    if (!initial || started.current) return;
+    const t = setTimeout(() => {
       started.current = true;
       sendMessage({ text: initial });
-    }
+    });
+    return () => clearTimeout(t);
   }, [initial, sendMessage]);
 
   useEffect(() => {
@@ -300,7 +332,12 @@ export function AgentChat({ initial }: { initial?: string }) {
                   m.role === "user" ? (
                     <p key={i} className="rounded-lg rounded-br-sm bg-navy px-4 py-3 text-white">{part.text.length > 280 ? `${part.text.slice(0, 180)}…` : part.text}</p>
                   ) : (
-                    <div key={i} className="rounded-lg rounded-bl-sm bg-sky px-5 py-4"><RichText text={part.text} /></div>
+                    <div key={i} className="group relative rounded-lg rounded-bl-sm bg-sky px-5 py-4">
+                      <RichText text={part.text} />
+                      <Button type="button" size="icon-xs" variant="ghost" onClick={() => speak(part.text)} aria-label="Écouter la réponse" className="absolute top-2 right-2 text-muted-foreground opacity-60 group-hover:opacity-100">
+                        <Volume2Icon />
+                      </Button>
+                    </div>
                   )
                 ) : (
                   <ToolCard key={i} part={part} onApprove={(id, approved) => addToolApprovalResponse({ id, approved })} />
@@ -338,9 +375,16 @@ export function AgentChat({ initial }: { initial?: string }) {
                 <PaperclipIcon className="size-4" /> Déposer un document
                 <input type="file" accept="application/pdf,image/*" className="sr-only" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) upload(f); }} />
               </label>
+              <div className="flex items-center gap-1">
+              {canDictate && (
+                <InputGroupButton type="button" size="icon-sm" variant={listening ? "secondary" : "ghost"} onClick={dictate} disabled={busy || listening} aria-label="Dicter votre question" className="rounded-md">
+                  <MicIcon className={cn(listening && "animate-pulse text-danger")} />
+                </InputGroupButton>
+              )}
               <InputGroupButton type="submit" size="icon-sm" variant="default" disabled={!draft.trim() || busy} aria-label="Envoyer" className="rounded-md">
                 <ArrowUpIcon />
               </InputGroupButton>
+              </div>
             </InputGroupAddon>
           </InputGroup>
         </form>

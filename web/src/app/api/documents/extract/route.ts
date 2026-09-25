@@ -1,3 +1,4 @@
+import { guard } from "@/lib/rate-limit";
 import { extractDocument } from "@/lib/documents/extract";
 import { layersAt } from "@/lib/geo/layers";
 import { layerReasons } from "@/lib/risk";
@@ -6,6 +7,8 @@ const MAX = 10 * 1024 * 1024;
 
 // Lecture d'une pièce (PDF ou image) puis, si c'est un levé, croisement avec les couches ANDF.
 export async function POST(req: Request) {
+  const tooMany = guard(req, "documents/extract", 10);
+  if (tooMany) return tooMany;
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) return Response.json({ error: "Fichier manquant (champ « file »)." }, { status: 400 });
