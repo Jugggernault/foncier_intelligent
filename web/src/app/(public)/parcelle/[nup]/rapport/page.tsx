@@ -77,7 +77,7 @@ export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/
 
         <footer className="mt-10 border-t pt-4 text-xs leading-relaxed text-muted-foreground">
           Rapport généré automatiquement par Foncier Intelligent (démonstration UDI-AFRICA) à partir des données disponibles à la date indiquée
-          {p.real ? " : attributs publiés par l'ANDF" : " : parcelle fictive de démonstration"}, imagerie Sentinel-2 (EOX, CC BY-NC-SA 4.0). Il ne remplace ni
+          {p.real ? " : attributs publiés par l'ANDF" : " : parcelle fictive de démonstration"}, imagerie Sentinel-2 (Digital Earth Africa, CC BY 4.0). Il ne remplace ni
           l&apos;état descriptif délivré par l&apos;ANDF ni l&apos;avis d&apos;un notaire.
         </footer>
       </article>

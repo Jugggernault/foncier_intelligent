@@ -1,4 +1,4 @@
-"""Télécharge les vignettes Sentinel-2 cloudless (EOX, CC BY-NC-SA 4.0) autour des parcelles
+"""Télécharge les vignettes Sentinel-2 GeoMAD annuelles (Digital Earth Africa, CC BY 4.0) autour des parcelles
 publiées dans les avis de publicité foncière ANDF. Usage : python3 scripts/fetch_imagery.py"""
 import io, json, math, os, urllib.request
 from PIL import Image
@@ -10,8 +10,8 @@ PARCELS = {
     "101236307": (397080, 702867),
     "101232574": (457480, 718712),
 }
-YEARS = {2016: "s2cloudless_3857", 2018: "s2cloudless-2018_3857", 2020: "s2cloudless-2020_3857",
-         2022: "s2cloudless-2022_3857", 2024: "s2cloudless-2024_3857"}
+YEARS = [2017, 2019, 2021, 2023, 2025]
+WMS = "https://ows.digitalearth.africa/wms?service=WMS&version=1.3.0&request=GetMap&layers=gm_s2_annual&styles=simple_rgb&format=image/png&crs=EPSG:3857"
 Z, CROP = 15, 768  # z15 ≈ 4,8 m/px : proche du 10 m natif, moins flou que z16
 OUT = os.path.join(os.path.dirname(__file__), "..", "public", "imagery")
 
@@ -42,29 +42,27 @@ def world_px(lat, lon):
     return x, y
 
 
-def fetch(layer, tx, ty):
-    url = f"https://tiles.maps.eox.at/wmts/1.0.0/{layer}/default/g/{Z}/{ty}/{tx}.jpg"
+def fetch(year, bbox):
+    url = f"{WMS}&width=512&height=512&bbox={','.join(f'{v:.2f}' for v in bbox)}&time={year}-01-01"
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "foncier-intelligent-demo"})) as r:
-        return Image.open(io.BytesIO(r.read())).convert("RGB")
+        # ponytail: le WMS plafonne à 512 px ; Sentinel-2 est à 10 m natif, le rééchantillonnage ne perd rien
+        return Image.open(io.BytesIO(r.read())).convert("RGB").resize((CROP, CROP), Image.LANCZOS)
 
 
 meta = {}
 for nup, (e, n) in PARCELS.items():
     lat, lon = utm_to_latlon(e, n)
     px, py = world_px(lat, lon)
-    x0, y0 = px - CROP / 2, py - CROP / 2
-    tx0, ty0, tx1, ty1 = int(x0 // 256), int(y0 // 256), int((x0 + CROP) // 256), int((y0 + CROP) // 256)
+    # Emprise de la vignette en EPSG:3857 (même cadrage qu'avant : CROP pixels au zoom Z)
+    res = 2 * math.pi * 6378137 / (256 * 2**Z)
+    cx, cy = px * res - math.pi * 6378137, math.pi * 6378137 - py * res
+    half = CROP / 2 * res
     os.makedirs(os.path.join(OUT, nup), exist_ok=True)
-    for year, layer in YEARS.items():
-        canvas = Image.new("RGB", ((tx1 - tx0 + 1) * 256, (ty1 - ty0 + 1) * 256))
-        for tx in range(tx0, tx1 + 1):
-            for ty in range(ty0, ty1 + 1):
-                canvas.paste(fetch(layer, tx, ty), ((tx - tx0) * 256, (ty - ty0) * 256))
-        ox, oy = int(x0 - tx0 * 256), int(y0 - ty0 * 256)
-        canvas.crop((ox, oy, ox + CROP, oy + CROP)).save(os.path.join(OUT, nup, f"{year}.jpg"), quality=82)
+    for year in YEARS:
+        fetch(year, (cx - half, cy - half, cx + half, cy + half)).save(os.path.join(OUT, nup, f"{year}.jpg"), quality=82)
     mpp = 156543.03392 * math.cos(math.radians(lat)) / 2**Z
     meta[nup] = {"lat": round(lat, 6), "lon": round(lon, 6), "metersPerPixel": round(mpp, 4), "size": CROP,
-                 "years": list(YEARS)}
+                 "years": YEARS}
     print(nup, round(lat, 5), round(lon, 5))
 
 with open(os.path.join(OUT, "meta.json"), "w") as fh:

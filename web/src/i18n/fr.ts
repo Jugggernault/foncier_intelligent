@@ -37,13 +37,13 @@ export const fr = {
     ownerState: "État béninois",
     ownerPrivate: "Particulier (identité masquée)",
     open: "Voir la fiche complète",
-    source: "Sources : avis de publicité foncière ANDF · Sentinel-2 cloudless © EOX IT Services (CC BY-NC-SA 4.0), données Copernicus modifiées",
+    source: "Sources : avis de publicité foncière ANDF · Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées",
   },
 
   timeline: {
     title: "Le terrain ne ment pas.",
-    lead: "Un vendeur peut produire un faux papier, pas une fausse image satellite. Chaque fiche montre l'évolution réelle du terrain depuis 2016. Ici, la côte de Togbin : l'aménagement littoral apparaît en 2022.",
-    caption: "Togbin-Daho, Godomey · NUP 101236198 · Sentinel-2 cloudless © EOX IT Services (CC BY-NC-SA 4.0), données Copernicus modifiées, 10 m par pixel",
+    lead: "Un vendeur peut produire un faux papier, pas une fausse image satellite. Chaque fiche montre l'évolution réelle du terrain depuis 2017. Ici, la côte de Togbin : l'aménagement littoral apparaît en 2023.",
+    caption: "Togbin-Daho, Godomey · NUP 101236198 · Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées, 10 m par pixel",
   },
 
   reading: {

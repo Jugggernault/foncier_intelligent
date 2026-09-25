@@ -186,7 +186,7 @@ export function ParcelVerifier() {
 
 function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const imagery = getImagery(parcel.nup);
-  const years = imagery?.years ?? [2016, 2018, 2020, 2022, 2024];
+  const years = imagery?.years ?? [2017, 2019, 2021, 2023, 2025];
   const [year, setYear] = useState(years.at(-1)!);
   // Verdict immédiat sur les données locales, puis enrichi par les couches ANDF (PostGIS) via l'API.
   const [full, setFull] = useState<{ result: Assessment; layers: string[] }>();

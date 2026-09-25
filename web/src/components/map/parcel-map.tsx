@@ -10,11 +10,12 @@ import { cn } from "@/lib/utils";
 export type MapParcel = { nup: string; polygon: [number, number][]; level?: RiskLevel };
 export type Basemap = "satellite" | "plan";
 
-// ponytail: EOX s2cloudless = démo non commerciale (DATA_SOURCES.md § 4) ; bascule vers DE Africa GeoMAD en production
+// Composites annuels Sentinel-2 sans nuages de Digital Earth Africa (CC BY 4.0, usage commercial permis), 2017 à 2025.
+// ponytail: WMS public interrogé tuile par tuile ; mettre un cache (CDN ou proxy) devant si le trafic grandit.
 const s2Tiles = (year: number) =>
-  `https://tiles.maps.eox.at/wmts/1.0.0/${year === 2016 ? "s2cloudless" : `s2cloudless-${year}`}_3857/default/g/{z}/{y}/{x}.jpg`;
+  `https://ows.digitalearth.africa/wms?service=WMS&version=1.3.0&request=GetMap&layers=gm_s2_annual&styles=simple_rgb&format=image/png&crs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}&time=${Math.min(2025, Math.max(2017, year))}-01-01`;
 const S2_ATTRIBUTION =
-  'Sentinel-2 cloudless © <a href="https://s2maps.eu">EOX IT Services</a> (CC BY-NC-SA 4.0), données Copernicus modifiées';
+  'Sentinel-2 GeoMAD © <a href="https://www.digitalearthafrica.org">Digital Earth Africa</a> (CC BY 4.0), données Copernicus modifiées';
 
 const LEVEL_COLOR: Record<RiskLevel | "none", string> = {
   danger: "#e8112d",
@@ -77,7 +78,7 @@ export function ParcelMap({
   parcels,
   selected,
   basemap = "satellite",
-  year = 2024,
+  year = 2025,
   onSelect,
   padding = 60,
   maxZoom = 16.5,
@@ -127,7 +128,7 @@ export function ParcelMap({
             ? "https://tiles.openfreemap.org/styles/liberty"
             : {
                 version: 8,
-                sources: { s2: { type: "raster", tiles: [s2Tiles(year)], tileSize: 256, maxzoom: 15, attribution: S2_ATTRIBUTION } },
+                sources: { s2: { type: "raster", tiles: [s2Tiles(year)], tileSize: 256, maxzoom: 14, attribution: S2_ATTRIBUTION } },
                 layers: [{ id: "s2", type: "raster", source: "s2" }],
               },
         bounds: parcels.length ? bounds(parcels) : undefined,

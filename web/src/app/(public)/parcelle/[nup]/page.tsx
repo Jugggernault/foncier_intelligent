@@ -180,10 +180,10 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
               ))}
             </ItemGroup>
           ) : (
-            <p className="mt-3 text-sm text-muted-foreground">Aucun changement notable détecté sur l&apos;emprise depuis 2016.</p>
+            <p className="mt-3 text-sm text-muted-foreground">Aucun changement notable détecté sur l&apos;emprise depuis 2017.</p>
           )}
           <p className="mt-6 max-w-2xl text-sm text-muted-foreground">
-            Utilisez le curseur d&apos;années sous la carte pour comparer l&apos;état du terrain de 2016 à 2024 (Sentinel-2, 10 m par pixel).
+            Utilisez le curseur d&apos;années sous la carte pour comparer l&apos;état du terrain de 2017 à 2025 (Sentinel-2, 10 m par pixel).
           </p>
         </TabsContent>
 

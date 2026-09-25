@@ -15,7 +15,7 @@ export default function TermsPage() {
         <p>Les verdicts, estimations et réponses de l&apos;assistant sont des informations générales. Ils ne remplacent ni l&apos;état descriptif délivré par l&apos;ANDF, ni l&apos;avis d&apos;un professionnel.</p>
         <h2>Données et licences</h2>
         <ul>
-          <li>Imagerie : Sentinel-2 cloudless © EOX IT Services (CC BY-NC-SA 4.0), données Copernicus modifiées.</li>
+          <li>Imagerie : Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées.</li>
           <li>Fond de carte : OpenFreeMap, © OpenMapTiles, données © contributeurs OpenStreetMap (ODbL).</li>
           <li>Textes juridiques : Code foncier et domanial, décrets et arrêtés publiés par le SGG et l&apos;ANDF.</li>
         </ul>

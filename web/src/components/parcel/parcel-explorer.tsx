@@ -6,12 +6,12 @@ import { ParcelMap, type Basemap, type MapParcel } from "@/components/map/parcel
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-const YEARS = [2016, 2018, 2020, 2022, 2024];
+const YEARS = [2017, 2019, 2021, 2023, 2025];
 
 /** Carte de la fiche parcelle : la parcelle, ses voisines, le fond et l'année d'imagerie. */
 export function ParcelExplorer({ parcel, neighbours, layers = [] }: { parcel: MapParcel; neighbours: MapParcel[]; layers?: string[] }) {
   const router = useRouter();
-  const [year, setYear] = useState(2024);
+  const [year, setYear] = useState(2025);
   const [basemap, setBasemap] = useState<Basemap>("satellite");
   const [showLayers, setShowLayers] = useState(true);
 

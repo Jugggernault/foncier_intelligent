@@ -25,7 +25,7 @@ export default async function AlertPage({ params }: PageProps<"/espace/alertes/[
       </SpaceHeader>
       <SpaceBody>
         <div className="max-w-5xl">
-          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "caution" }} before={Math.max(2016, Math.min(year, 2024) - 4)} after={2024} />
+          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "caution" }} before={Math.max(2017, Math.min(year, 2025) - 4)} after={2025} />
           <p className="mt-4 text-sm text-muted-foreground">
             Une alerte déclenche une vérification, jamais une sanction. Si le changement est normal (vos propres travaux, par exemple), vous pouvez l&apos;ignorer.
           </p>

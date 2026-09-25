@@ -22,7 +22,7 @@ export default async function DevelopmentProject({ params }: PageProps<"/agent/r
             <NdviChart values={r.ndvi} expected={r.expected} />
             <p className="mt-2 text-xs text-muted-foreground">Données de démonstration ; source prévue : Sentinel-2 via Digital Earth Africa.</p>
           </div>
-          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "caution" }} before={2018} after={2024} />
+          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "caution" }} before={2018} after={2025} />
         </div>
       </SpaceBody>
     </>

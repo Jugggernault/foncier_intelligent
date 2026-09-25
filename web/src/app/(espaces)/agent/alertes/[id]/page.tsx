@@ -17,7 +17,7 @@ export default async function Encroachment({ params }: PageProps<"/agent/alertes
       <SpaceHeader title={`${e.id} · ${e.zone}`} lead={`${e.note} Parcelle ${e.nup}, ${p.quartier}, ${p.commune}. Détectée le ${fmtDate(e.detected, "long")}, ${e.areaM2} m² bâtis, confiance ${Math.round(e.confidence * 100)} %. État : ${ENCROACHMENT_LABEL[e.status].toLowerCase()}.`} />
       <SpaceBody>
         <div className="max-w-5xl space-y-6">
-          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "danger" }} before={2018} after={2024} />
+          <CompareYears parcel={{ nup: p.nup, polygon: p.polygon, level: "danger" }} before={2018} after={2025} />
           <AlertActions />
         </div>
       </SpaceBody>

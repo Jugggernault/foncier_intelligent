@@ -21,7 +21,7 @@ export const COVERAGE = [
 export type Integration = { name: string; purpose: string; status: "reel" | "mock" | "accord"; detail: string };
 
 export const INTEGRATIONS: Integration[] = [
-  { name: "Imagerie Sentinel-2 (EOX)", purpose: "Fiche terrain, alertes", status: "reel", detail: "Tuiles s2cloudless 2016–2024, démo non commerciale" },
+  { name: "Imagerie Sentinel-2 (Digital Earth Africa)", purpose: "Fiche terrain, alertes", status: "reel", detail: "GeoMAD annuel 2017–2025, CC BY 4.0" },
   { name: "OpenFreeMap", purpose: "Fond de carte", status: "reel", detail: "Style Liberty, données OSM" },
   { name: "Cadastre ANDF (API NUP + WFS)", purpose: "Fiches parcelles", status: "mock", detail: "API publique identifiée, branchement à venir (DATA_SOURCES.md)" },
   { name: "Publicité foncière ANDF", purpose: "Veille et alertes", status: "mock", detail: "Table andf.bj lisible, scraping à brancher" },
