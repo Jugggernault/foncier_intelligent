@@ -14,7 +14,64 @@ const DISPUTE_LABEL = {
   contestation: "une contestation de propriété",
 } as const;
 
-export function assess(p: Parcel, today = new Date()): Assessment {
+/** Couche géographique touchée par la parcelle (forme minimale, cf. lib/geo/layers). */
+export type LayerFinding = { layerId: string; label: string; severity: "danger" | "caution" | "info"; share: number; props: Record<string, string | number | null> };
+
+const pct = (x: number) => `${Math.round(x * 100)} %`;
+
+/** Raisons issues des couches ANDF du hackathon (litiges, restrictions, domaine public, TF…). */
+export function layerReasons(hits: LayerFinding[]): Reason[] {
+  const out: Reason[] = [];
+  for (const h of hits) {
+    const part = h.share >= 0.99 ? "en totalité" : `sur ${pct(h.share)} de sa surface`;
+    const p = h.props;
+    switch (h.layerId) {
+      case "litige":
+        out.push({ level: "danger", text: `La parcelle est ${part} dans une zone en litige devant ${p.tribunal ?? "les juridictions"}${p.role ? ` (rôle ${p.role})` : ""}.`, action: "N'achetez pas avant la décision définitive." });
+        break;
+      case "restriction":
+        out.push({
+          level: p.type === "Exploitation de Sable" ? "caution" : "danger",
+          text: `Restriction ${part} : ${[p.type, p.designation].filter(Boolean).join(", ")}.`,
+          action: p.type === "ZDUP" || p.type === "PAG" ? "Terrain réservé à un projet public : risque d'expropriation. N'achetez pas." : "Terrain du domaine public ou réglementé : il ne peut pas être vendu librement.",
+        });
+        break;
+      case "tf_etat":
+        out.push({ level: "danger", text: `La parcelle recoupe ${part} un titre foncier de l'État.`, action: "Aucun particulier ne peut vous vendre ce terrain." });
+        break;
+      case "aire_protegee":
+        out.push({ level: "danger", text: `La parcelle empiète ${part} sur une aire protégée : ${p.designation ?? "forêt classée"}.`, action: "Construction et vente interdites. Faites vérifier les limites (contours de fiabilité variable)." });
+        break;
+      case "dpm":
+      case "dpl":
+        out.push({ level: "danger", text: `La parcelle est ${part} dans la bande du ${h.label.toLowerCase()}.`, action: "Le domaine public est inaliénable : cette partie ne peut être ni vendue ni titrée." });
+        break;
+      case "tf_en_cours":
+        out.push({
+          level: "caution",
+          text: `Un titre foncier est en cours ${part}${p.validation === "non" && p.motif ? ` ; le plan a été rejeté : « ${p.motif} »` : ""}.`,
+          action: "Vérifiez que le vendeur est bien le demandeur du titre, et attendez sa délivrance.",
+        });
+        break;
+      case "zone_inondable":
+        out.push({ level: "caution", text: `La parcelle est ${part} en zone inondable.`, action: "Prévoyez des fondations adaptées et vérifiez l'historique des crues." });
+        break;
+      case "aif":
+        out.push({ level: "caution", text: "La parcelle est dans le périmètre d'une association d'intérêts fonciers.", action: "La vente doit être validée par l'association." });
+        break;
+      case "tf_demembre":
+      case "tf_reconstitue":
+        out.push({ level: "clear", text: `Issue d'un ${h.label.toLowerCase()}${p.tf ? ` (réf. ${p.tf})` : ""}.` });
+        break;
+      case "enregistrement":
+        out.push({ level: "clear", text: "Parcelle enregistrée au cadastre (enregistrement individuel)." });
+        break;
+    }
+  }
+  return out;
+}
+
+export function assess(p: Parcel, today = new Date(), hits: LayerFinding[] = []): Assessment {
   const reasons: Reason[] = [];
   const iso = today.toISOString().slice(0, 10);
   const publicityOpen = !!p.procedure && p.procedure.publicity.start <= iso && iso <= p.procedure.publicity.end;
@@ -67,13 +124,19 @@ export function assess(p: Parcel, today = new Date()): Assessment {
   if (p.right === "titre") {
     reasons.push({ level: "clear", text: `Titre foncier n° ${p.titleNumber} délivré.` });
   }
+  reasons.push(...layerReasons(hits));
 
   const level = reasons.reduce<RiskLevel>((acc, r) => (RANK[r.level] > RANK[acc] ? r.level : acc), "clear");
+  const layerDanger = hits.find((h) => h.severity === "danger");
   const headline =
     level === "danger"
       ? p.owner.kind === "state"
         ? "Terrain de l'État : il ne peut pas vous être vendu"
-        : "Litige en cours : n'achetez pas maintenant"
+        : p.dispute || layerDanger?.layerId === "litige"
+          ? "Litige en cours : n'achetez pas maintenant"
+          : layerDanger?.layerId === "restriction" && ["ZDUP", "PAG"].includes(String(layerDanger.props.type))
+            ? "Terrain réservé à un projet public : n'achetez pas"
+            : "Terrain du domaine public ou protégé : n'achetez pas"
       : level === "caution"
         ? "Prudence : vérifiez avant de payer"
         : "Aucun signal d'alerte dans les données disponibles";

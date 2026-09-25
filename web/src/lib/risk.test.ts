@@ -26,3 +26,12 @@ test("les NUP de démonstration sont uniques et au format", () => {
   expect(new Set(nups).size).toBe(nups.length);
   expect(nups.every((n) => /^\d{9}$/.test(n))).toBe(true);
 });
+
+test("les couches ANDF alimentent le verdict", () => {
+  const p = listParcels().find((x) => x.right === "titre" && !x.dispute && !x.alerts.length && x.landUse === "urbain")!;
+  const zdup = assess(p, new Date(), [{ layerId: "restriction", label: "Restriction", severity: "danger", share: 1, props: { type: "ZDUP", designation: "Route des Pêches" } }]);
+  expect(zdup.level).toBe("danger");
+  expect(zdup.headline).toContain("projet public");
+  const flood = assess(p, new Date(), [{ layerId: "zone_inondable", label: "Zone inondable", severity: "caution", share: 0.3, props: {} }]);
+  expect(flood.level).toBe("caution");
+});
