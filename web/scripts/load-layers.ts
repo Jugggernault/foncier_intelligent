@@ -1,5 +1,5 @@
 // Charge les 12 couches GeoJSON du hackathon dans PostGIS (local ou Supabase).
-// Usage : DATABASE_URL=postgres://… bun scripts/load-layers.ts [dossier des .geojson]
+// Usage : bun scripts/load-layers.ts [dossier des .geojson] (lit DIRECT_URL, sinon DATABASE_URL, depuis .env.local)
 // Les attributs sont filtrés : aucun nom de personne (demandeur, défendeur, avocat) ne quitte les fichiers source.
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -100,8 +100,9 @@ const LAYERS: Layer[] = [
 ];
 
 const dir = process.argv[2] ?? join(import.meta.dir, "../../ilemi-main/public/data_files");
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL manquant");
+// Migration et chargement : connexion de session (DIRECT_URL, port 5432) plutôt que le pooler transactionnel
+const url = (process.env.DIRECT_URL ?? process.env.DATABASE_URL)?.replace(/[?&]pgbouncer=true\b/, "");
+if (!url) throw new Error("DIRECT_URL ou DATABASE_URL manquant");
 const sql = postgres(url, { max: 1, onnotice: () => {} });
 
 await sql.file(join(import.meta.dir, "../supabase/migrations/0001_layers.sql"));

@@ -44,7 +44,7 @@ Sans `DATABASE_URL`, l'application tourne quand même : les verdicts retombent s
 
 1. **Supabase** : créer un projet, activer l'extension `postgis` (Database → Extensions), copier la chaîne du *pooler* (mode transaction, port 6543).
 2. Charger les couches depuis votre machine (les GeoJSON ne sont jamais envoyés sur Vercel) :
-   `DATABASE_URL="postgres://…pooler.supabase.com:6543/postgres" bun scripts/load-layers.ts`
+   renseigner `DIRECT_URL` (pooler de session, port 5432) dans `.env.local`, puis `bun scripts/load-layers.ts`
 3. **Vercel** : importer le dépôt, dossier racine `web`, puis définir les variables :
    - `DATABASE_URL` : la chaîne du pooler Supabase ;
    - `OPENROUTER_API_KEY` et `OPENROUTER_MODEL` (identifiant du modèle GLM sur OpenRouter) ; sans elles, Ilèmi utilise son modèle scripté ;

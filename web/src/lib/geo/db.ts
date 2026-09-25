@@ -7,6 +7,7 @@ const g = globalThis as unknown as { __pg?: postgres.Sql };
 
 export function db(): postgres.Sql | undefined {
   if (!process.env.DATABASE_URL) return undefined;
-  g.__pg ??= postgres(process.env.DATABASE_URL, { max: 5, prepare: false, idle_timeout: 20 });
+  // `pgbouncer=true` (chaîne fournie par Supabase) serait transmis à Postgres comme paramètre inconnu : on le retire.
+  g.__pg ??= postgres(process.env.DATABASE_URL.replace(/[?&]pgbouncer=true\b/, ""), { max: 5, prepare: false, idle_timeout: 20 });
   return g.__pg;
 }
