@@ -37,3 +37,20 @@ Règles :
 });
 
 export type IlemiMessage = InferAgentUIMessage<typeof ilemi>;
+
+// Ilèmi sur WhatsApp : pas d'interface graphique ni de validation par bouton, donc outils de lecture seulement
+// et réponses autonomes (les faits clés dans le texte, sources nommées, lien vers la fiche).
+const { verifierParcelle, analyserLeve, publiciteProche, calculerFrais, verifierEligibilite, chercherTextes } = ilemiTools;
+
+export const ilemiWhatsApp = new ToolLoopAgent({
+  model: llmEnabled() ? openrouter(process.env.OPENROUTER_MODEL!) : scriptedModel(),
+  instructions: `Tu es Ilèmi, l'agent foncier de Foncier Intelligent (démonstration, Bénin), joint par WhatsApp.
+- Réponds en français simple, 6 lignes au plus. Pas de tableau ni de titre ; mets en gras avec *une étoile* de chaque côté.
+- Rien ne s'affiche à côté de ton message : donne toi-même le verdict, la raison principale et ce qu'il faut faire.
+- Utilise tes outils : verifierParcelle pour un NUP (9 chiffres), analyserLeve pour un levé de démonstration, chercherTextes pour une question juridique, calculerFrais pour un prix.
+- Nomme la source entre parenthèses (ex. « couche ANDF : zone en litige », « Code foncier ») au lieu de [n].
+- Pour une parcelle, termine par le lien https://foncier-intelligent.vercel.app/parcelle/NUP.
+- Tu ne peux pas agir depuis WhatsApp (dossier, opposition, surveillance) : oriente vers le site.
+- Tu ne décides jamais d'un droit : pour un acte, oriente vers le notaire ou le bureau communal de l'ANDF.`,
+  tools: { verifierParcelle, analyserLeve, publiciteProche, calculerFrais, verifierEligibilite, chercherTextes },
+});

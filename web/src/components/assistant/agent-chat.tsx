@@ -32,6 +32,9 @@ const STARTERS = [
   "Combien coûte la mutation d'un terrain à 25 millions ?",
 ];
 
+// Numéro WhatsApp d'Ilèmi (bac à sable Twilio en démo : le premier message doit être « join <code> »)
+const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+
 const TOOL_LABEL: Record<string, string> = {
   verifierParcelle: "Croisement avec les couches de l'ANDF",
   analyserLeve: "Lecture du levé",
@@ -394,6 +397,14 @@ export function AgentChat({ initial }: { initial?: string }) {
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
               Donnez un NUP, déposez le levé du vendeur ou posez une question. Je croise les couches de l&apos;ANDF, j&apos;explique, et je peux préparer votre dossier ou votre opposition avec votre accord.
             </p>
+            {WHATSAPP && (
+              <a
+                href={`https://wa.me/${WHATSAPP.replace(/\D/g, "")}?text=${encodeURIComponent(process.env.NEXT_PUBLIC_WHATSAPP_JOIN ?? "Bonjour Ilèmi")}`}
+                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-navy underline underline-offset-4"
+              >
+                Ilèmi répond aussi sur WhatsApp : envoyez un NUP ou le PDF du levé
+              </a>
+            )}
             <ul className="mt-8 grid gap-2 sm:grid-cols-2">
               {STARTERS.map((s) => (
                 <li key={s}>
