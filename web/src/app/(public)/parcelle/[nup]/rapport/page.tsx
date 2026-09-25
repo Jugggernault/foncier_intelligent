@@ -8,6 +8,7 @@ import { findParcel } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
 import { assessFull } from "@/lib/geo/verdict";
 import { LayerFindings } from "@/components/parcel/layer-findings";
+import { qrSvg, reportRef, sealCode, verifyUrl } from "@/lib/report-seal";
 
 export async function generateMetadata({ params }: PageProps<"/parcelle/[nup]/rapport">): Promise<Metadata> {
   return { title: `Rapport de vérification ${(await params).nup} · Foncier Intelligent` };
@@ -19,7 +20,10 @@ export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/
   const { result, hits } = await assessFull(p);
   const clim = climate(p);
   const now = new Date();
-  const ref = `FI-${p.nup}-${now.toISOString().slice(0, 10).replaceAll("-", "")}`;
+  const ref = reportRef(p.nup, now.toISOString().slice(0, 10));
+  const code = sealCode(ref, result, hits);
+  const url = verifyUrl(ref, code);
+  const qr = await qrSvg(url);
 
   const rows: [string, string][] = [
     ["NUP", p.nup],
@@ -75,7 +79,17 @@ export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/
           </tbody>
         </table>
 
-        <footer className="mt-10 border-t pt-4 text-xs leading-relaxed text-muted-foreground">
+        <section className="mt-10 flex flex-wrap items-center gap-6 rounded-lg border p-5 print:break-inside-avoid">
+          {/* SVG généré côté serveur par la bibliothèque qrcode (aucune donnée utilisateur injectée) */}
+          <div className="size-28 shrink-0" dangerouslySetInnerHTML={{ __html: qr }} />
+          <div className="min-w-0 flex-1 text-sm">
+            <p className="font-bold text-navy">Rapport vérifiable</p>
+            <p className="mt-1 text-muted-foreground">Scannez le code ou saisissez la référence et le code sur <span className="font-medium text-foreground">foncier-intelligent.vercel.app/verifier</span> : la page affiche le verdict authentique. Toute modification du rapport est détectée.</p>
+            <p className="tabular mt-2 font-semibold">Code de vérification : {code}</p>
+          </div>
+        </section>
+
+        <footer className="mt-6 border-t pt-4 text-xs leading-relaxed text-muted-foreground">
           Rapport généré automatiquement par Foncier Intelligent (démonstration UDI-AFRICA) à partir des données disponibles à la date indiquée
           {p.real ? " : attributs publiés par l'ANDF" : " : parcelle fictive de démonstration"}, imagerie Sentinel-2 (Digital Earth Africa, CC BY 4.0). Il ne remplace ni
           l&apos;état descriptif délivré par l&apos;ANDF ni l&apos;avis d&apos;un notaire.

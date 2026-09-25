@@ -125,7 +125,7 @@ export const fr = {
   footer: {
     about: "Démonstration portée par UDI-AFRICA, lauréat du Hackathon IA « Foncier Intelligent » (ASIN · ANDF · LuxDev, 2025). Ce site n'est pas un service officiel : pour tout acte, adressez-vous à l'ANDF ou à un notaire.",
     columns: [
-      { title: "Vérifier", links: [["Rechercher une parcelle", "/recherche"], ["Carte", "/carte"], ["Publicité foncière", "/publicite"]] },
+      { title: "Vérifier", links: [["Rechercher une parcelle", "/recherche"], ["Carte", "/carte"], ["Publicité foncière", "/publicite"], ["Vérifier un rapport", "/verifier"]] },
       { title: "Comprendre", links: [["Démarches", "/guides"], ["Calcul des frais", "/outils/frais"], ["Qui peut acheter ?", "/outils/eligibilite"]] },
       { title: "Le projet", links: [["À propos", "/a-propos"], ["Impact", "/impact"], ["Charte IA", "/ia-responsable"], ["Développeurs", "/developpeurs"]] },
     ],

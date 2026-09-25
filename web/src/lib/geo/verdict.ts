@@ -57,10 +57,10 @@ export async function hitsFn(): Promise<(nup: string) => LayerHit[]> {
 }
 
 /** Verdict complet : règles de la parcelle + couches géographiques ANDF. */
-export async function assessFull(p: Parcel): Promise<{ hits: LayerHit[]; result: Assessment }> {
+export async function assessFull(p: Parcel, today = new Date()): Promise<{ hits: LayerHit[]; result: Assessment }> {
   const known = (await hitsIndex()).get(p.nup);
   const hits = known ?? (allParcels().some((x) => x.nup === p.nup) ? [] : await layersAt(p.polygon));
-  return { hits, result: assess(p, new Date(), hits) };
+  return { hits, result: assess(p, today, hits) };
 }
 
 /** Verdict seul, pour les listes et les cartes. */
