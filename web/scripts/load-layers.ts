@@ -20,6 +20,22 @@ type Layer = {
 
 const s = (v: unknown) => (v == null || v === "" ? undefined : String(v).trim());
 
+// Les motifs de rejet sont du texte libre qui cite parfois des personnes : on ne garde qu'une catégorie.
+export const MOTIFS: [code: string, label: string, test: RegExp][] = [
+  ["calage", "Calage de la parcelle à revoir", /calage|décalage|borne/i],
+  ["element_physique", "Élément physique à relever sur le terrain", /élément physique|elements? physiques?|éléments physiques/i],
+  ["procedure_judiciaire", "Zone en cours de procédure judiciaire", /procédure judiciaire|litige/i],
+  ["autre_plan", "Correspond à un autre plan de bornage", /autre plan|plan de bornage/i],
+  ["restriction", "Zone d'utilité publique ou réservée", /zdup|utilité publique|réserv|domaine public/i],
+  ["transmis", "Plan transmis ou retransmis", /transmi/i],
+];
+const motif = (v: unknown) => {
+  const t = s(v);
+  if (!t) return {};
+  const m = MOTIFS.find(([, , re]) => re.test(t));
+  return m ? { motif_code: m[0], motif: m[1] } : { motif_code: "autre", motif: "Autre motif (voir dossier)" };
+};
+
 const LAYERS: Layer[] = [
   {
     file: "litige.geojson", id: "litige", label: "Zone en litige", category: "droit", severity: "danger",
@@ -54,7 +70,7 @@ const LAYERS: Layer[] = [
   {
     file: "tf_en_cours.geojson", id: "tf_en_cours", label: "Titre foncier en cours", category: "droit", severity: "caution",
     description: "Plan déposé pour l'obtention d'un titre foncier, en cours d'instruction.",
-    pick: (p) => ({ label: "TF en cours", commune: s(p.commune), arrondissement: s(p.arrond), quartier: s(p.qu_village), validation: s(p.validation), motif: s(p.motif), nup: s(p.nup), tf: s(p.tf_alea) }),
+    pick: (p) => ({ label: "TF en cours", commune: s(p.commune), arrondissement: s(p.arrond), quartier: s(p.qu_village), validation: s(p.validation), ...motif(p.motif), nup: s(p.nup), tf: s(p.tf_alea) }),
   },
   {
     file: "zone_inondable.geojson", id: "zone_inondable", label: "Zone inondable", category: "risque", severity: "caution",
