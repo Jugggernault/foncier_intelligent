@@ -51,6 +51,8 @@ export type Parcel = {
   pricePerM2: { low: number; high: number };
   /** true = données réelles publiées par l'ANDF, false = parcelle fictive de démonstration */
   real: boolean;
+  /** true = lu en direct sur l'API et le WFS de l'ANDF (polygone réel) */
+  live?: boolean;
 };
 
 export type Imagery = {

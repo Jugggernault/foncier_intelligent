@@ -46,16 +46,20 @@ export function ParcelVerifier() {
   const [missing, setMissing] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Parcelles hors démonstration, lues sur l'ANDF en direct par l'API (ANDF_LIVE)
+  const [remote, setRemote] = useState<Record<string, Parcel>>({});
+  const lookup = (nup: string) => getParcel(nup) ?? remote[nup];
 
-  function show(nup: string) {
+  async function show(nup: string) {
     setError(null);
     if (!NUP_PATTERN.test(nup)) return setError(t.invalid);
-    if (getParcel(nup)) {
-      setMissing(null);
-      setActive(nup);
-    } else {
-      setMissing(nup);
+    if (!lookup(nup)) {
+      const d = await fetch(`/api/parcels/${nup}`).then((r) => (r.ok ? r.json() : undefined)).catch(() => undefined);
+      if (!d) return setMissing(nup);
+      setRemote((m) => ({ ...m, [nup]: { ...d, owner: { kind: d.owner, initials: "—" } } }));
     }
+    setMissing(null);
+    setActive(nup);
   }
 
   // La bande de clôture envoie son NUP ici (voir VerifyAgain).
@@ -157,7 +161,7 @@ export function ParcelVerifier() {
       </div>
 
       <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:self-center">
-        {missing ? <MissingPanel nup={missing} /> : <VerdictPanel key={active} parcel={getParcel(active)!} />}
+        {missing ? <MissingPanel nup={missing} /> : <VerdictPanel key={active} parcel={lookup(active)!} />}
       </div>
     </div>
   );

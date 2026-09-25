@@ -4,7 +4,7 @@ import { ParcelMap } from "@/components/map/parcel-map";
 import { PrintButton } from "@/components/parcel/print-button";
 import { Verdict } from "@/components/parcel/verdict";
 import { climate } from "@/lib/climate";
-import { getParcel } from "@/lib/data/parcels";
+import { findParcel } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
 import { assessFull } from "@/lib/geo/verdict";
 import { LayerFindings } from "@/components/parcel/layer-findings";
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps<"/parcelle/[nup]/ra
 }
 
 export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/rapport">) {
-  const p = getParcel((await params).nup);
+  const p = await findParcel((await params).nup);
   if (!p) notFound();
   const { result, hits } = await assessFull(p);
   const clim = climate(p);

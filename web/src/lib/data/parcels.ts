@@ -1,6 +1,7 @@
 // Point d'accès unique aux parcelles. Les écrans ne lisent que ces fonctions :
 // brancher l'API cadastre ANDF ici (DATA_SOURCES.md § 7, priorité 1) sans toucher à l'UI.
 import imageryMeta from "../../../public/imagery/meta.json";
+import { andfLive, fetchAndfParcel } from "./andf";
 import { PARCELS } from "./mock";
 import type { Imagery, Parcel } from "./types";
 
@@ -11,6 +12,11 @@ export const cadastreUrl = (nup: string) => `https://cadastre.andf.bj/nup/${nup}
 
 export function getParcel(nup: string): Parcel | undefined {
   return PARCELS.find((p) => p.nup === nup);
+}
+
+/** Démonstration d'abord, puis ANDF en direct si ANDF_LIVE=true. */
+export async function findParcel(nup: string): Promise<Parcel | undefined> {
+  return getParcel(nup) ?? (andfLive() ? fetchAndfParcel(nup) : undefined);
 }
 
 export function listParcels(): Parcel[] {

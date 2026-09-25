@@ -17,7 +17,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { climate, type Level } from "@/lib/climate";
-import { cadastreUrl, getParcel, isPublicityOpen, neighbours } from "@/lib/data/parcels";
+import { cadastreUrl, findParcel, isPublicityOpen, neighbours } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
 import { assessFull, verdictFn } from "@/lib/geo/verdict";
 import { LayerFindings } from "@/components/parcel/layer-findings";
@@ -37,7 +37,7 @@ const CLIMATE_TONE: Record<Level, string> = {
 export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]">) {
   const judge = await verdictFn();
   const { nup } = await params;
-  const p = getParcel(nup);
+  const p = await findParcel(nup);
   if (!p) notFound();
 
   const { result, hits } = await assessFull(p);
@@ -71,7 +71,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="rounded-sm">{rightLabel(p)}</Badge>
             <Badge variant="outline" className="rounded-sm">
-              {p.real ? "Données publiées par l'ANDF" : "Parcelle de démonstration"}
+              {p.live ? "ANDF, consulté en direct" : p.real ? "Données publiées par l'ANDF" : "Parcelle de démonstration"}
             </Badge>
           </div>
           <h1 className="tabular mt-3 text-[clamp(2.2rem,5vw,3.6rem)] leading-none font-extrabold tracking-[0.02em] text-navy">
@@ -103,7 +103,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
             neighbours={near.map((n) => ({ nup: n.nup, polygon: n.polygon, level: judge(n).level }))}
           />
           <p className="mt-2 text-xs text-muted-foreground">
-            Emprise {p.real ? "approximative, déduite du centroïde et de la superficie publiés" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
+            Emprise {p.live ? "publiée par l'ANDF (WFS efb_parcel)" : p.real ? "approximative, déduite du centroïde et de la superficie publiés" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
           </p>
         </div>
         <div className="lg:col-span-5">

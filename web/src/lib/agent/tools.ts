@@ -5,7 +5,7 @@ import { rules } from "@/lib/eligibility";
 import { GUIDES } from "@/content/guides";
 import { getDemoDoc, DEMO_DOCS } from "@/content/demo-documents";
 import { answer } from "@/lib/assistant";
-import { getParcel, isPublicityOpen, neighbours, NUP_PATTERN } from "@/lib/data/parcels";
+import { findParcel, isPublicityOpen, neighbours, NUP_PATTERN } from "@/lib/data/parcels";
 import { mutationFee } from "@/lib/fees";
 import { layersAt } from "@/lib/geo/layers";
 import { assessFull } from "@/lib/geo/verdict";
@@ -21,7 +21,7 @@ export const ilemiTools = {
     description: "Vérifie une parcelle par son NUP : situation juridique, verdict de risque expliqué et couches ANDF traversées (litiges, ZDUP/PAG, domaine public, titres, zones inondables).",
     inputSchema: z.object({ nup }),
     execute: async ({ nup }) => {
-      const p = getParcel(nup);
+      const p = await findParcel(nup);
       if (!p) return { trouve: false as const, nup };
       const { result, hits } = await assessFull(p);
       return {
@@ -54,7 +54,7 @@ export const ilemiTools = {
     description: "Liste les demandes de titre publiées (publicité foncière) près d'une parcelle, avec le délai d'opposition.",
     inputSchema: z.object({ nup }),
     execute: async ({ nup }) => {
-      const p = getParcel(nup);
+      const p = await findParcel(nup);
       if (!p) return { avis: [] };
       return {
         avis: neighbours(p, 2500)
@@ -109,7 +109,7 @@ export const ilemiTools = {
     description: "Rédige une lettre d'opposition à une demande de titre publiée sur une parcelle. Action : demande l'accord de l'utilisateur.",
     inputSchema: z.object({ nup, motif: z.string().describe("Motif de l'opposition, en une phrase") }),
     execute: async ({ nup, motif }) => {
-      const p = getParcel(nup);
+      const p = await findParcel(nup);
       return {
         nup,
         lettre: `À Monsieur le Chef du Bureau communal du Domaine et du Foncier${p ? ` de ${p.commune}` : ""},\n\nJe forme opposition à la demande${p?.procedure ? ` n° ${p.procedure.requestNumber}` : ""} portant sur la parcelle NUP ${nup}, au motif suivant : ${motif}.\n\nJe tiens à votre disposition les pièces justifiant mes droits.\n\nFait pour valoir ce que de droit.`,
