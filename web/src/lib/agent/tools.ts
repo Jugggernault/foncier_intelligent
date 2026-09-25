@@ -5,15 +5,26 @@ import { rules } from "@/lib/eligibility";
 import { GUIDES } from "@/content/guides";
 import { getDemoDoc, DEMO_DOCS } from "@/content/demo-documents";
 import { answer } from "@/lib/assistant";
-import { findParcel, isPublicityOpen, neighbours, NUP_PATTERN } from "@/lib/data/parcels";
+import { cadastreUrl, findParcel, isPublicityOpen, neighbours, NUP_PATTERN } from "@/lib/data/parcels";
 import { mutationFee } from "@/lib/fees";
-import { layersAt } from "@/lib/geo/layers";
+import { layersAt, type LayerHit } from "@/lib/geo/layers";
 import { assessFull } from "@/lib/geo/verdict";
 import { rightLabel } from "@/lib/labels";
 import { layerReasons } from "@/lib/risk";
 import { areaM2, ringFromUtm } from "@/lib/survey";
 
 const nup = z.string().regex(NUP_PATTERN).describe("Numéro unique de parcelle (NUP), 9 chiffres");
+
+/** Source citable renvoyée par un outil : l'agent la cite [n], l'interface l'affiche sous la réponse. */
+export type Reference = { id: string; title: string; domain?: string; url?: string };
+
+const layerRefs = (hits: LayerHit[]): Reference[] =>
+  hits.map((h) => ({
+    id: `couche-${h.layerId}`,
+    title: `Couche ANDF · ${h.label}${h.props.designation ? ` (${h.props.designation})` : ""}`,
+    domain: "Données géographiques ANDF, hackathon 2025",
+    url: "/carte",
+  }));
 
 /** Outils de l'agent Ilèmi. Chaque sortie est rendue par un composant dans le chat (UI générative). */
 export const ilemiTools = {
@@ -33,6 +44,7 @@ export const ilemiTools = {
         polygone: p.polygon,
         verdict: result,
         couches: hits.map((h) => ({ id: h.layerId, label: h.label, severity: h.severity, part: h.share })),
+        references: [{ id: "cadastre", title: `Fiche cadastrale ANDF · NUP ${nup}`, domain: "cadastre.andf.bj", url: cadastreUrl(nup) }, ...layerRefs(hits)] satisfies Reference[],
       };
     },
   }),
@@ -46,7 +58,7 @@ export const ilemiTools = {
       const ring = ringFromUtm(d.bornes.map((b) => [b.x, b.y]));
       const hits = await layersAt(ring);
       const reasons = layerReasons(hits);
-      return { trouve: true as const, titre: d.title, lieu: `${d.quartier}, ${d.commune}`, polygone: ring, superficieCalculee: areaM2(ring), superficieDeclaree: d.declaredM2, raisons: reasons, couches: hits.map((h) => ({ id: h.layerId, label: h.label, severity: h.severity, part: h.share })) };
+      return { trouve: true as const, titre: d.title, lieu: `${d.quartier}, ${d.commune}`, polygone: ring, superficieCalculee: areaM2(ring), superficieDeclaree: d.declaredM2, raisons: reasons, couches: hits.map((h) => ({ id: h.layerId, label: h.label, severity: h.severity, part: h.share })), references: [{ id: "document", title: d.title, domain: "Document de démonstration", url: `/demo-docs/${d.file}` }, ...layerRefs(hits)] satisfies Reference[] };
     },
   }),
 
@@ -61,6 +73,7 @@ export const ilemiTools = {
           .filter((n) => n.procedure)
           .slice(0, 6)
           .map((n) => ({ nup: n.nup, lieu: `${n.quartier}, ${n.commune}`, fin: n.procedure!.publicity.end, ouvert: isPublicityOpen(n) })),
+        references: [{ id: "publicite", title: "Avis de publicité foncière de l'ANDF", domain: "andf.bj", url: "https://andf.bj/les-publicites-foncieres/" }] satisfies Reference[],
       };
     },
   }),
@@ -68,7 +81,11 @@ export const ilemiTools = {
   calculerFrais: tool({
     description: "Calcule les frais ANDF de mutation d'un titre foncier pour un prix de vente en FCFA (barème officiel).",
     inputSchema: z.object({ prix: z.number().positive().describe("Prix de vente en FCFA") }),
-    execute: async ({ prix }) => ({ prix, ...mutationFee(prix) }),
+    execute: async ({ prix }) => ({
+      prix,
+      ...mutationFee(prix),
+      references: [{ id: "bareme", title: "Barème des frais de mutation de l'ANDF", domain: "service-public.bj", url: "https://service-public.bj" }] satisfies Reference[],
+    }),
   }),
 
   verifierEligibilite: tool({
@@ -78,7 +95,13 @@ export const ilemiTools = {
       milieu: z.enum(["urbain", "rural"]),
       surface: z.enum(["lt2", "2-20", "20-500", "gt500"]).default("lt2"),
     }),
-    execute: async ({ nationalite, milieu, surface }) => ({ reponses: rules(nationalite, milieu, surface) }),
+    execute: async ({ nationalite, milieu, surface }) => ({
+      reponses: rules(nationalite, milieu, surface),
+      references: [
+        { id: "cfd", title: "Code foncier et domanial (loi 2013-01, modifiée par la loi 2017-15)", domain: "sgg.gouv.bj", url: "https://sgg.gouv.bj/doc/loi-2017-15/download" },
+        { id: "decision-2024", title: "Décision ANDF du 27 décembre 2024 (origine des fonds)", domain: "andf.bj", url: "https://andf.bj/normes-de-services-arretes" },
+      ] satisfies Reference[],
+    }),
   }),
 
   chercherTextes: tool({
@@ -88,7 +111,15 @@ export const ilemiTools = {
       const kb = answer(question);
       const q = question.toLowerCase();
       const guides = GUIDES.filter((g) => [g.title, g.summary, ...g.steps].join(" ").toLowerCase().split(/\W+/).some((w) => w.length > 5 && q.includes(w))).slice(0, 2);
-      return { extraits: kb.text, sources: kb.sources, guides: guides.map((g) => ({ titre: g.title, lien: `/guides/${g.slug}`, etapes: g.steps })) };
+      return {
+        extraits: kb.text,
+        sources: kb.sources,
+        guides: guides.map((g) => ({ titre: g.title, lien: `/guides/${g.slug}`, etapes: g.steps })),
+        references: [
+          ...kb.sources.map((s, i) => ({ id: `texte-${i}`, title: s, domain: "Textes fonciers" })),
+          ...guides.map((g) => ({ id: `guide-${g.slug}`, title: `Guide : ${g.title}`, domain: "Foncier Intelligent", url: `/guides/${g.slug}` })),
+        ] satisfies Reference[],
+      };
     },
   }),
 

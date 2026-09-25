@@ -58,22 +58,23 @@ function summarize(toolName: string, out: Json | undefined, denied: boolean): st
       if (!out.trouve) return `Je ne trouve pas la parcelle ${out.nup} dans la démonstration. Vérifiez les 9 chiffres ou déposez le levé du vendeur.`;
       const v = out.verdict as { headline: string; reasons: { text: string; action?: string }[]; level: string };
       const action = v.reasons.find((r) => r.action)?.action;
-      return `**${v.headline}.** ${v.reasons[0]?.text ?? ""} ${action ? `\n\n${action}` : ""}\n\nSource : couches géographiques de l'ANDF et cadastre de démonstration. Voulez-vous que je surveille cette parcelle ?`;
+      const refs = (out.references as unknown[] | undefined)?.length ?? 0;
+      return `**${v.headline}.** ${v.reasons[0]?.text ?? ""}${refs > 1 ? " [2]" : ""} ${action ? `\n\n${action}` : ""}\n\nSources : fiche cadastrale de l'ANDF [1]${refs > 1 ? " et couches géographiques de l'ANDF" : ""}. Voulez-vous que je surveille cette parcelle ?`;
     }
     case "analyserLeve": {
       if (!out.trouve) return "Ce levé ne fait pas partie des documents de démonstration.";
       const r = out.raisons as { level: string; text: string; action?: string }[];
       const danger = r.find((x) => x.level === "danger");
       return danger
-        ? `**N'achetez pas ce terrain.** ${danger.text} ${danger.action ?? ""}`
+        ? `**N'achetez pas ce terrain.** ${danger.text} [2] ${danger.action ?? ""}`
         : r.length
           ? `**Prudence.** ${r.map((x) => x.text).join(" ")}`
           : `**Aucun signal d'alerte** dans les couches de l'ANDF pour ce levé (${out.superficieCalculee} m² calculés). Faites tout de même établir la vente par un notaire.`;
     }
     case "calculerFrais":
-      return `Pour une vente de ${new Intl.NumberFormat("fr-FR").format(Number(out.prix))} F, les frais de mutation de l'ANDF sont de **${new Intl.NumberFormat("fr-FR").format(Number(out.total))} F** (${out.rule}, plus 500 F de régie). Les honoraires du notaire s'y ajoutent.`;
+      return `Pour une vente de ${new Intl.NumberFormat("fr-FR").format(Number(out.prix))} F, les frais de mutation de l'ANDF sont de **${new Intl.NumberFormat("fr-FR").format(Number(out.total))} F** (${out.rule}, plus 500 F de régie) [1]. Les honoraires du notaire s'y ajoutent.`;
     case "verifierEligibilite":
-      return (out.reponses as { text: string }[]).map((r) => r.text).join(" ") + "\n\nSource : Code foncier et domanial.";
+      return (out.reponses as { text: string }[]).map((r) => r.text).join(" ") + " [1]";
     case "chercherTextes":
       return (out.extraits as string[]).join("\n\n");
     case "publiciteProche": {

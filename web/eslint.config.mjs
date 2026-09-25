@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "public/**",
+    // Composants tiers du registre @agentui (libellés traduits en français, code inchangé)
+    "src/components/agents/**",
+    "src/components/motion/**",
   ]),
 ]);
 

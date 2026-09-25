@@ -5,13 +5,18 @@ import Link from "next/link";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithApprovalResponses } from "ai";
 import { ArrowRightIcon, ArrowUpIcon, CheckCircle2Icon, InfoIcon, MicIcon, PaperclipIcon, ScaleIcon, Volume2Icon, XCircleIcon } from "lucide-react";
+import { AgentActivity, type AgentActivityItem } from "@/components/agents/agent-activity";
+import { Citation } from "@/components/agents/citations";
+import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
+import { StreamingResponse } from "@/components/agents/streaming-response";
+import { ToolApproval } from "@/components/agents/tool-approval";
 import { ParcelMap } from "@/components/map/parcel-map";
 import { LEVEL } from "@/components/parcel/verdict";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
-import { Spinner } from "@/components/ui/spinner";
 import type { IlemiMessage } from "@/lib/agent/ilemi";
+import type { Reference } from "@/lib/agent/tools";
 import { LAYER_COLOR } from "@/lib/geo/palette";
 import { fmtArea, fmtFcfa } from "@/lib/labels";
 import type { RiskLevel } from "@/lib/risk";
@@ -27,25 +32,50 @@ const STARTERS = [
   "Combien coûte la mutation d'un terrain à 25 millions ?",
 ];
 
-const LOADING: Record<string, string> = {
-  verifierParcelle: "Ilèmi croise la parcelle avec les couches de l'ANDF…",
-  analyserLeve: "Ilèmi lit le levé et le place sur la carte…",
-  publiciteProche: "Ilèmi consulte la publicité foncière…",
-  calculerFrais: "Ilèmi applique le barème de l'ANDF…",
-  verifierEligibilite: "Ilèmi applique le Code foncier…",
-  chercherTextes: "Ilèmi consulte les textes…",
-  preparerDossier: "Ilèmi prépare le dossier…",
-  redigerOpposition: "Ilèmi rédige la lettre…",
-  surveillerParcelle: "Ilèmi active la surveillance…",
+const TOOL_LABEL: Record<string, string> = {
+  verifierParcelle: "Croisement avec les couches de l'ANDF",
+  analyserLeve: "Lecture du levé",
+  publiciteProche: "Publicité foncière voisine",
+  calculerFrais: "Barème de l'ANDF",
+  verifierEligibilite: "Code foncier",
+  chercherTextes: "Recherche dans les textes",
+  preparerDossier: "Préparation du dossier",
+  redigerOpposition: "Rédaction de l'opposition",
+  surveillerParcelle: "Surveillance de la parcelle",
 };
 
-/** Mise en forme minimale du texte du modèle : paragraphes et **gras**. */
-function RichText({ text }: { text: string }) {
+type ToolPart = Extract<Part, { type: `tool-${string}` }>;
+const isTool = (p: Part): p is ToolPart => p.type.startsWith("tool-");
+
+/** Sources d'un message : les « references » des outils, dans l'ordre d'appel (numérotation des [n]). */
+function messageSources(m: IlemiMessage): Reference[] {
+  return m.parts.flatMap((p) => (isTool(p) && p.state === "output-available" ? ((p.output as { references?: Reference[] }).references ?? []) : []));
+}
+
+/** Réflexion du modèle et appels d'outils, pour le panneau d'activité. */
+function activityItems(m: IlemiMessage): AgentActivityItem[] {
+  return m.parts.flatMap((p, i): AgentActivityItem[] => {
+    if (p.type === "reasoning" && p.text.trim()) return [{ id: `r${i}`, type: "text", content: p.text.trim() }];
+    if (!isTool(p)) return [];
+    const input = (p.input ?? {}) as Record<string, unknown>;
+    const detail = [input.nup, input.document, input.prix && fmtFcfa(Number(input.prix)), input.question].find(Boolean);
+    return [{ id: p.toolCallId, type: "trace", kind: "read", label: TOOL_LABEL[p.type.slice(5)] ?? p.type.slice(5), detail: detail ? String(detail) : undefined }];
+  });
+}
+
+/** Mise en forme minimale du texte du modèle : paragraphes, **gras** et renvois [n] vers les sources. */
+function RichText({ text, sources, idPrefix }: { text: string; sources: Reference[]; idPrefix: string }) {
+  const inline = (s: string, key: number) =>
+    s.split(/(\[\d+\])/g).map((t, j) => {
+      const n = t.match(/^\[(\d+)\]$/)?.[1];
+      const ref = n ? sources[Number(n) - 1] : undefined;
+      return ref ? <Citation key={`${key}-${j}`} citationId={ref.id} index={Number(n)} idPrefix={idPrefix} /> : t;
+    });
   return (
     <div className="space-y-2 leading-relaxed">
       {text.split(/\n{2,}/).map((para, i) => (
         <p key={i} className="whitespace-pre-wrap">
-          {para.split(/(\*\*[^*]+\*\*)/g).map((s, j) => (s.startsWith("**") ? <strong key={j}>{s.slice(2, -2)}</strong> : s))}
+          {para.split(/(\*\*[^*]+\*\*)/g).map((s, j) => (s.startsWith("**") ? <strong key={j}>{inline(s.slice(2, -2), j)}</strong> : inline(s, j)))}
         </p>
       ))}
     </div>
@@ -85,13 +115,13 @@ function MiniMap({ id, polygon, level, couches }: { id: string; polygon: [number
 }
 
 function ToolCard({ part, onApprove }: { part: Part; onApprove: (id: string, approved: boolean) => void }) {
-  if (!part.type.startsWith("tool-")) return null;
+  if (!isTool(part)) return null;
   const name = part.type.slice(5);
-  const p = part as Extract<Part, { type: `tool-${string}` }>;
+  const p = part;
   const card = "space-y-3 rounded-lg border bg-card p-4";
 
-  if (p.state === "input-streaming" || p.state === "input-available")
-    return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Spinner />{LOADING[name] ?? "Ilèmi travaille…"}</p>;
+  // L'appel en cours est montré dans le panneau d'activité
+  if (p.state === "input-streaming" || p.state === "input-available") return null;
   if (p.state === "output-error") return <p className="text-sm text-danger">L&apos;outil a échoué : {p.errorText}</p>;
   if (p.state === "output-denied") return <p className="flex items-center gap-2 text-sm text-muted-foreground"><XCircleIcon className="size-4" />Action annulée.</p>;
 
@@ -99,14 +129,14 @@ function ToolCard({ part, onApprove }: { part: Part; onApprove: (id: string, app
     const input = p.input as Record<string, string>;
     const what = { preparerDossier: `Préparer un dossier « ${input.type} » pour la parcelle ${input.nup}`, redigerOpposition: `Rédiger une opposition sur la parcelle ${input.nup}`, surveillerParcelle: `Surveiller la parcelle ${input.nup} (SMS, WhatsApp)` }[name] ?? "Exécuter cette action";
     return (
-      <div className={cn(card, "border-navy/30")}>
-        <p className="font-semibold">Ilèmi vous demande votre accord</p>
-        <p className="text-sm">{what}{name === "redigerOpposition" && input.motif ? ` : ${input.motif}` : ""}.</p>
-        <div className="flex gap-2">
-          <Button size="sm" onClick={() => onApprove(p.approval.id, true)}>Confirmer</Button>
-          <Button size="sm" variant="outline" onClick={() => onApprove(p.approval.id, false)}>Annuler</Button>
-        </div>
-      </div>
+      <ToolApproval
+        tool={TOOL_LABEL[name] ?? name}
+        title="Ilèmi vous demande votre accord"
+        description={`${what}${name === "redigerOpposition" && input.motif ? ` : ${input.motif}` : ""}.`}
+        parameters={Object.entries(input).map(([k, v]) => ({ id: k, label: k === "nup" ? "NUP" : k, value: String(v) }))}
+        onApprove={() => onApprove(p.approval.id, true)}
+        onDeny={() => onApprove(p.approval.id, false)}
+      />
     );
   }
   if (p.state !== "output-available") return null;
@@ -225,6 +255,58 @@ function ToolCard({ part, onApprove }: { part: Part; onApprove: (id: string, app
   return null;
 }
 
+function activitySummary(items: AgentActivityItem[]) {
+  const tools = items.filter((a) => a.type === "trace").length;
+  const thought = items.some((a) => a.type === "text");
+  const t = tools ? `${tools} outil${tools > 1 ? "s" : ""}` : "";
+  return thought ? (t ? `Réflexion et ${t}` : "Réflexion") : t;
+}
+
+function AssistantMessage({ m, live, onApprove }: { m: IlemiMessage; live: boolean; onApprove: (id: string, approved: boolean) => void }) {
+  const sources = messageSources(m);
+  const activity = activityItems(m);
+  const texts = m.parts.flatMap((p, i) => (p.type === "text" && p.text.trim() ? [i] : []));
+  const lastText = texts.at(-1);
+  const idPrefix = `src-${m.id}`;
+  return (
+    <>
+      {activity.length > 0 && (
+        <AgentActivity
+          items={activity}
+          contentType="mixed"
+          status={live && lastText === undefined ? "working" : "complete"}
+          collapseOnComplete
+          activeLabel="Ilèmi travaille…"
+          summary={activitySummary(activity)}
+        />
+      )}
+      {m.parts.map((part, i) =>
+        part.type === "text" ? (
+          part.text.trim() ? (
+            <div key={i} className="group relative rounded-lg rounded-bl-sm bg-sky px-5 py-4">
+              <StreamingResponse
+                status={live && i === lastText ? "streaming" : "complete"}
+                copyText={part.text}
+                sources={i === lastText ? sources : []}
+                sourceIdPrefix={idPrefix}
+                showActions={i === lastText}
+                announce={false}
+              >
+                <RichText text={part.text} sources={sources} idPrefix={idPrefix} />
+              </StreamingResponse>
+              <Button type="button" size="icon-xs" variant="ghost" onClick={() => speak(part.text)} aria-label="Écouter la réponse" className="absolute top-2 right-2 text-muted-foreground opacity-60 group-hover:opacity-100">
+                <Volume2Icon />
+              </Button>
+            </div>
+          ) : null
+        ) : (
+          <ToolCard key={i} part={part} onApprove={onApprove} />
+        )
+      )}
+    </>
+  );
+}
+
 // Voix : API natives du navigateur (dictée et lecture à voix haute), rien à héberger.
 // ponytail: français seulement ; fon/yoruba demanderont un modèle dédié (ex. Whisper affiné) côté serveur.
 type Recognition = { lang: string; interimResults: boolean; start(): void; onresult: (e: { results: { 0: { transcript: string } }[] }) => void; onend: () => void };
@@ -325,28 +407,21 @@ export function AgentChat({ initial }: { initial?: string }) {
         )}
 
         <ol className="space-y-6" aria-live="polite">
-          {messages.map((m) => (
-            <li key={m.id} className={m.role === "user" ? "ml-auto w-fit max-w-[85%]" : "max-w-[95%] space-y-3"}>
-              {m.parts.map((part, i) =>
-                part.type === "text" ? (
-                  m.role === "user" ? (
-                    <p key={i} className="rounded-lg rounded-br-sm bg-navy px-4 py-3 text-white">{part.text.length > 280 ? `${part.text.slice(0, 180)}…` : part.text}</p>
-                  ) : (
-                    <div key={i} className="group relative rounded-lg rounded-bl-sm bg-sky px-5 py-4">
-                      <RichText text={part.text} />
-                      <Button type="button" size="icon-xs" variant="ghost" onClick={() => speak(part.text)} aria-label="Écouter la réponse" className="absolute top-2 right-2 text-muted-foreground opacity-60 group-hover:opacity-100">
-                        <Volume2Icon />
-                      </Button>
-                    </div>
-                  )
-                ) : (
-                  <ToolCard key={i} part={part} onApprove={(id, approved) => addToolApprovalResponse({ id, approved })} />
-                )
-              )}
-            </li>
-          ))}
+          {messages.map((m, idx) =>
+            m.role === "user" ? (
+              <li key={m.id} className="ml-auto w-fit max-w-[85%]">
+                {m.parts.map((part, i) =>
+                  part.type === "text" ? <p key={i} className="rounded-lg rounded-br-sm bg-navy px-4 py-3 text-white">{part.text.length > 280 ? `${part.text.slice(0, 180)}…` : part.text}</p> : null
+                )}
+              </li>
+            ) : (
+              <li key={m.id} className="max-w-[95%] space-y-3">
+                <AssistantMessage m={m} live={idx === messages.length - 1 && status === "streaming"} onApprove={(id, approved) => addToolApprovalResponse({ id, approved })} />
+              </li>
+            )
+          )}
           {(status === "submitted" || uploading) && (
-            <li className="flex items-center gap-2 text-sm text-muted-foreground"><Spinner />{uploading ? "Lecture du document…" : "Ilèmi réfléchit…"}</li>
+            <li className="text-sm"><ThinkingShimmer>{uploading ? "Lecture du document…" : "Ilèmi réfléchit…"}</ThinkingShimmer></li>
           )}
           {error && <li className="text-sm text-danger">Erreur : {error.message}</li>}
         </ol>
