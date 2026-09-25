@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { listPublicityNotices } from "@/lib/data/parcels";
 import { DETECTABLE, impactStats } from "@/lib/geo/impact";
 import { noticeChecks } from "@/lib/geo/notice-check";
+import { titleCase as title } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 export const revalidate = 86400;
@@ -13,7 +14,6 @@ export const metadata: Metadata = { title: "Impact · Foncier Intelligent", desc
 
 const n = (v: number) => new Intl.NumberFormat("fr-FR").format(v);
 const pct = (a: number, b: number) => `${Math.round((a / b) * 100)} %`;
-const title = (s: string) => s.toLowerCase().replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
 
 export default async function ImpactPage() {
   const [stats, checks] = await Promise.all([impactStats(), noticeChecks()]);

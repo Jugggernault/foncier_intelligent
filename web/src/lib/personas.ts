@@ -129,6 +129,7 @@ export const NAV: Record<Space, NavGroup[]> = {
       items: [
         { href: "/agent", label: "Ma journée", icon: CalendarClockIcon },
         { href: "/agent/dossiers", label: "File d'instruction", icon: FilesIcon },
+        { href: "/agent/plans", label: "Plans des géomètres", icon: RulerIcon },
         { href: "/agent/publicite", label: "Publicité foncière", icon: MegaphoneIcon },
         { href: "/agent/litiges", label: "Litiges", icon: ScaleIcon },
         { href: "/agent/recherche", label: "Recherche", icon: SearchIcon },

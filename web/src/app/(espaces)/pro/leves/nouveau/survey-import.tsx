@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangleIcon, CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 import { ParcelMap } from "@/components/map/parcel-map";
+import { PrecheckReport } from "@/components/parcel/precheck-report";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
-import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import type { Precheck } from "@/lib/geo/precheck";
-import { cn } from "@/lib/utils";
 
 const EXAMPLE = "B1 427453.18 711291.12\nB2 427473.10 711292.86\nB3 427471.01 711316.77\nB4 427451.09 711315.03";
-const ICON = { ok: CheckCircle2Icon, warn: AlertTriangleIcon, fail: XCircleIcon };
-const TONE = { ok: "text-clear", warn: "text-caution", fail: "text-danger" };
 
 type Parsed = { ring?: [number, number][]; error?: string };
 
@@ -25,10 +22,14 @@ export function SurveyImport() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Precheck & { ring: [number, number][] }>();
   const [parsed, setParsed] = useState<Parsed>({});
+  const [sent, setSent] = useState<number>();
+  const [sending, setSending] = useState(false);
+  const [bornesSent, setBornesSent] = useState<[number, number][]>([]);
 
   async function run(src = text, decl = declared) {
     setLoading(true);
     setResult(undefined);
+    setSent(undefined);
     // Bornes : « X Y » par ligne (UTM 31N), libellés de bornes tolérés
     const bornes = src
       .split(/\r?\n/)
@@ -48,6 +49,7 @@ export function SurveyImport() {
     ring.push(ring[0]);
     setParsed({ ring });
     setResult({ ...data, ring });
+    setBornesSent(bornes);
   }
 
   async function fromPdf(file: File) {
@@ -62,6 +64,16 @@ export function SurveyImport() {
   }
 
   const blocking = result?.checks.some((c) => c.status === "fail");
+
+  // Le serveur recalcule le pré-contrôle : l'agent reçoit un rapport qui ne dépend pas du navigateur
+  async function transmit() {
+    setSending(true);
+    const res = await fetch("/api/plans", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ bornes: bornesSent, declaredM2: Number(declared) || undefined }) });
+    const d = await res.json();
+    setSending(false);
+    if (!res.ok) return toast.error(d.error ?? "Transmission impossible.");
+    setSent(d.id);
+  }
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
@@ -90,39 +102,16 @@ export function SurveyImport() {
 
         {result && (
           <section className="space-y-4 rounded-lg border bg-card p-5">
-            <div>
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="font-bold text-navy">Pré-contrôle ANDF</h2>
-                <span className={cn("tabular text-sm font-semibold", result.rejectRisk > 0.6 ? "text-danger" : result.rejectRisk > 0.3 ? "text-caution" : "text-clear")}>
-                  Risque de rejet : {Math.round(result.rejectRisk * 100)} %
-                </span>
-              </div>
-              <Progress value={result.rejectRisk * 100} className="mt-2" aria-label="Risque de rejet" />
-            </div>
-            <ul className="space-y-3">
-              {result.checks.map((c) => {
-                const Icon = ICON[c.status];
-                return (
-                  <li key={c.id} className="flex gap-3 text-sm">
-                    <Icon className={cn("mt-0.5 size-4 shrink-0", TONE[c.status])} />
-                    <div>
-                      <p className="font-semibold">{c.label}</p>
-                      <p className="text-muted-foreground">{c.detail}</p>
-                      {c.fix && c.status !== "ok" && <p className="mt-0.5 font-medium">{c.fix}</p>}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-            {result.context && (
-              <p className="border-t pt-3 text-xs text-muted-foreground">
-                Appris sur {new Intl.NumberFormat("fr-FR").format(result.context.plans)} plans déposés à {result.context.commune} : {Math.round(result.context.rejectRate * 100)} % rejetés.
-                Premiers motifs : {result.context.topReasons.map((r) => `${r.label.toLowerCase()} (${Math.round(r.share * 100)} %)`).join(", ")}.
+            <PrecheckReport report={result} />
+            {sent ? (
+              <p className="rounded-md bg-clear-soft px-3 py-2 text-sm text-clear">
+                Plan n° {sent} transmis au cadastre avec son rapport. <Link href="/pro/leves" className="font-semibold underline underline-offset-4">Suivre la décision</Link>
               </p>
+            ) : (
+              <Button disabled={blocking || sending} onClick={transmit}>
+                {sending && <Spinner />} {blocking ? "À corriger avant transmission" : "Transmettre au cadastre"}
+              </Button>
             )}
-            <Button disabled={blocking} onClick={() => toast.success("Plan transmis au cadastre avec son rapport de pré-contrôle (démonstration).")}>
-              {blocking ? "À corriger avant transmission" : "Transmettre au cadastre"}
-            </Button>
           </section>
         )}
       </div>

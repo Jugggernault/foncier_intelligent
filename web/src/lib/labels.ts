@@ -35,3 +35,6 @@ export const fmtFcfa = (n: number) => new Intl.NumberFormat("fr-FR", { maximumFr
 
 /** Jours restants jusqu'à une date (0 si passée). */
 export const daysUntil = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000));
+
+/** « ABOMEY-CALAVI » → « Abomey-Calavi » (libellés en majuscules des données ANDF). */
+export const titleCase = (s: string) => s.toLowerCase().replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
