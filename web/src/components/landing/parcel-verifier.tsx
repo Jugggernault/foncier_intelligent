@@ -204,7 +204,16 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const style = LEVEL_STYLE[result.level];
   const Icon = style.icon;
   const place = [...new Set([parcel.quartier, parcel.arrondissement, parcel.commune])].join(" · ");
-  const side = imagery && parcel.areaM2 ? Math.sqrt(parcel.areaM2) / imagery.metersPerPixel : 0;
+  // Polygone réel projeté dans la vignette (768 px centrés sur imagery.lat/lon, metersPerPixel au sol)
+  const outline = imagery
+    ? parcel.polygon
+        .map(([lon, lat]) => {
+          const x = 384 + ((lon - imagery.lon) * 111_320 * Math.cos((imagery.lat * Math.PI) / 180)) / imagery.metersPerPixel;
+          const y = 384 - ((lat - imagery.lat) * 110_574) / imagery.metersPerPixel;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        })
+        .join(" ")
+    : "";
 
   return (
     <article className="flex flex-col overflow-hidden rounded-lg bg-card text-card-foreground shadow-[0_24px_60px_-20px_rgba(2,12,27,0.65)]">
@@ -229,17 +238,12 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
               aria-label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
             >
               <image href={`/imagery/${parcel.nup}/${year}.jpg`} width="768" height="768" />
-              <rect
-                x={384 - side / 2}
-                y={384 - side / 2}
-                width={side}
-                height={side}
+              <polygon
+                points={outline}
                 fill="rgba(255,212,0,0.12)"
                 stroke="var(--signal)"
                 strokeWidth="3"
-                strokeDasharray="10 7"
               />
-              <circle cx="384" cy="384" r="5" fill="var(--signal)" stroke="#06111f" strokeWidth="2" />
             </svg>
           ) : (
             <ParcelMap

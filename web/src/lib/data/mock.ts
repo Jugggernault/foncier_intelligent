@@ -1,12 +1,13 @@
-// Jeu de démonstration : 5 parcelles réelles (avis ANDF + API cadastre) et des parcelles fictives
+// Jeu de démonstration : 5 parcelles réelles (avis ANDF, polygones du WFS efb_parcel) et des parcelles fictives
 // générées de façon déterministe. ponytail: remplacé commune par commune quand l'API ANDF sera branchée.
+import realRings from "../../content/real-parcels.json";
 import type { LatLon, Parcel, RightType, TerrainAlert } from "./types";
 
 const DAY = 86_400_000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 
-/** Rectangle géoréférencé de la bonne surface autour d'un centre (approximation d'emprise). */
-export function rectangle(c: LatLon, areaM2: number, ratio = 1.3, angle = 0): [number, number][] {
+/** Quadrilatère géoréférencé de la bonne surface autour d'un centre ; `jitter` déforme les sommets (lot irrégulier). */
+export function rectangle(c: LatLon, areaM2: number, ratio = 1.3, angle = 0, jitter?: () => number): [number, number][] {
   const w = Math.sqrt(areaM2 * ratio);
   const h = areaM2 / w;
   const mLat = 110_574;
@@ -16,7 +17,9 @@ export function rectangle(c: LatLon, areaM2: number, ratio = 1.3, angle = 0): [n
     [w / 2, -h / 2],
     [w / 2, h / 2],
     [-w / 2, h / 2],
-  ].map(([x, y]) => {
+  ].map(([x0, y0]) => {
+    const x = jitter ? x0 * (0.85 + jitter() * 0.3) : x0;
+    const y = jitter ? y0 * (0.85 + jitter() * 0.3) : y0;
     const rx = x * Math.cos(angle) - y * Math.sin(angle);
     const ry = x * Math.sin(angle) + y * Math.cos(angle);
     return [+(c.lon + rx / mLon).toFixed(7), +(c.lat + ry / mLat).toFixed(7)];
@@ -123,7 +126,7 @@ const REAL: Parcel[] = [
     pricePerM2: { low: 5000, high: 12000 },
     real: true,
   },
-].map((p) => ({ ...p, polygon: rectangle(p.center, p.areaM2, 1.2) }) as Parcel);
+].map((p) => ({ ...p, polygon: (realRings as unknown as Record<string, [number, number][]>)[p.nup] }) as Parcel); // polygones réels (WFS ANDF)
 
 // ---- Parcelles fictives ----------------------------------------------------
 
@@ -211,7 +214,7 @@ function generate(count: number, now: number): Parcel[] {
       zone,
       titleNumber: right === "titre" ? String(1000 + Math.floor(rnd() * 30000)) : undefined,
       center,
-      polygon: rectangle(center, areaM2, 1 + rnd() * 0.8, rnd() * 0.6),
+      polygon: rectangle(center, areaM2, 1 + rnd() * 0.8, rnd() * 0.6, rnd),
       procedure,
       dispute:
         right !== "etat" && rnd() < 0.1

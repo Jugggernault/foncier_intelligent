@@ -103,7 +103,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
             neighbours={near.map((n) => ({ nup: n.nup, polygon: n.polygon, level: judge(n).level }))}
           />
           <p className="mt-2 text-xs text-muted-foreground">
-            Emprise {p.live ? "publiée par l'ANDF (WFS efb_parcel)" : p.real ? "approximative, déduite du centroïde et de la superficie publiés" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
+            Emprise {p.real ? "publiée par l'ANDF (cadastre numérique)" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
           </p>
         </div>
         <div className="lg:col-span-5">

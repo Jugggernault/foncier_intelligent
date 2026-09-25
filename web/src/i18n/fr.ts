@@ -29,7 +29,7 @@ export const fr = {
 
   verdict: {
     sample: "Parcelle publiée par l'ANDF",
-    footprint: "Emprise approximative, déduite du centroïde et de la superficie publiés",
+    footprint: "Emprise publiée par l'ANDF (cadastre numérique)",
     footprintLive: "Emprise de démonstration sur imagerie Sentinel-2",
     noPublicity: "Aucune en cours",
     why: "Pourquoi ce verdict ?",

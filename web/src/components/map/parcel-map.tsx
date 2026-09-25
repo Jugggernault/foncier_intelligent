@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { GeoJSONSource, Map as MlMap, RasterTileSource } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { RiskLevel } from "@/lib/risk";
+import benin from "@/content/benin.json";
 import { LAYER_COLOR } from "@/lib/geo/palette";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,14 @@ const s2Tiles = (year: number) =>
   `https://ows.digitalearth.africa/wms?service=WMS&version=1.3.0&request=GetMap&layers=gm_s2_annual&styles=simple_rgb&format=image/png&crs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}&time=${Math.min(2025, Math.max(2017, year))}-01-01`;
 const S2_ATTRIBUTION =
   'Sentinel-2 GeoMAD © <a href="https://www.digitalearthafrica.org">Digital Earth Africa</a> (CC BY 4.0), données Copernicus modifiées';
+
+// La carte ne montre que le Bénin : cadrage limité et masque sur le reste du monde (frontière geoBoundaries, CC BY 4.0).
+const BENIN_BOUNDS: [[number, number], [number, number]] = [[0.2, 5.6], [4.5, 12.9]];
+const OUTSIDE_BENIN: GeoJSON.Feature = {
+  type: "Feature",
+  properties: {},
+  geometry: { type: "Polygon", coordinates: [[[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]], benin.coordinates[0]] },
+};
 
 const LEVEL_COLOR: Record<RiskLevel | "none", string> = {
   danger: "#e8112d",
@@ -135,6 +144,8 @@ export function ParcelMap({
         center: parcels.length ? undefined : [2.35, 6.45],
         zoom: parcels.length ? undefined : 9,
         fitBoundsOptions: { padding, maxZoom },
+        maxBounds: BENIN_BOUNDS,
+        minZoom: 6,
         attributionControl: { compact: true },
         cooperativeGestures: true,
         locale: {
@@ -147,6 +158,10 @@ export function ParcelMap({
       m.on("load", () => {
         // Attribution repliée par défaut (bouton ⓘ) pour ne pas masquer la parcelle
         m.getContainer().querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
+        // Au-dessus du fond (libellés compris), sous les couches et les parcelles
+        m.addSource("hors-benin", { type: "geojson", data: OUTSIDE_BENIN, attribution: "Frontière © geoBoundaries (CC BY 4.0)" });
+        m.addLayer({ id: "hors-benin", type: "fill", source: "hors-benin", paint: { "fill-color": basemap === "plan" ? "#e9edf2" : "#06111f", "fill-opacity": basemap === "plan" ? 1 : 0.88 } });
+        m.addLayer({ id: "frontiere", type: "line", source: "hors-benin", paint: { "line-color": basemap === "plan" ? "#0b3a6e" : "#ffd400", "line-width": 1.5, "line-opacity": 0.7 } });
         syncLayers(m, layersRef.current);
         m.addSource("parcels", { type: "geojson", data: toGeoJSON(parcels, selected) });
         m.addLayer({
