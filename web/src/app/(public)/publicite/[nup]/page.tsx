@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellPlusIcon, FileWarningIcon } from "lucide-react";
+import { NoticeFlags } from "@/components/parcel/notice-flags";
 import { ParcelRow } from "@/components/parcel/parcel-row";
 import { LinkedMap } from "@/components/map/linked-map";
 import { PageHeader } from "@/components/site/page-header";
@@ -9,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { ItemGroup } from "@/components/ui/item";
 import { getParcel, isPublicityOpen, neighbours } from "@/lib/data/parcels";
+import { noticeChecks } from "@/lib/geo/notice-check";
 import { fmtArea, fmtDate, procedureLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,7 @@ export default async function NoticePage({ params }: PageProps<"/publicite/[nup]
   const open = isPublicityOpen(p);
   const near = neighbours(p, 800);
   const pr = p.procedure;
+  const flags = (await noticeChecks()).get(p.nup) ?? [];
   const requester = p.owner.kind === "state" ? "le Chef du Bureau communal du Domaine et du Foncier, au nom de l'État béninois" : p.owner.initials === "—" ? "un particulier ou une personne morale (identité non reprise ici)" : `un particulier (${p.owner.initials})`;
 
   return (
@@ -57,6 +60,12 @@ export default async function NoticePage({ params }: PageProps<"/publicite/[nup]
               {fmtArea(p.areaM2)}.
             </blockquote>
             <p className="mt-2 text-xs text-muted-foreground">Nom et téléphone du demandeur masqués conformément à la protection des données personnelles.</p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-navy">Contrôle automatique de l&apos;avis</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Emprise croisée avec les couches de l&apos;ANDF et avec les autres avis publiés.</p>
+            <NoticeFlags flags={flags} className="mt-3" />
           </section>
 
           <div className="flex flex-wrap gap-2">

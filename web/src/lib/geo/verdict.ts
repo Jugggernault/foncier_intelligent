@@ -50,6 +50,12 @@ function hitsIndex(): Promise<Map<string, LayerHit[]>> {
   return index;
 }
 
+/** Couches touchées par parcelle (index préchargé), pour les contrôles en lot. */
+export async function hitsFn(): Promise<(nup: string) => LayerHit[]> {
+  const idx = await hitsIndex();
+  return (nup) => idx.get(nup) ?? [];
+}
+
 /** Verdict complet : règles de la parcelle + couches géographiques ANDF. */
 export async function assessFull(p: Parcel): Promise<{ hits: LayerHit[]; result: Assessment }> {
   const known = (await hitsIndex()).get(p.nup);
