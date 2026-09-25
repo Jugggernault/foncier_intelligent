@@ -94,6 +94,7 @@ export function ParcelMap({
   className,
   label,
   layers = [],
+  view,
 }: {
   parcels: MapParcel[];
   selected?: string;
@@ -106,6 +107,8 @@ export function ParcelMap({
   label: string;
   /** Couches ANDF (tuiles vectorielles PostGIS) affichées sous les parcelles */
   layers?: string[];
+  /** Cadrage initial [[ouest, sud], [est, nord]] ; par défaut, l'emprise de toutes les parcelles */
+  view?: [[number, number], [number, number]];
 }) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<MlMap | null>(null);
@@ -140,7 +143,7 @@ export function ParcelMap({
                 sources: { s2: { type: "raster", tiles: [s2Tiles(year)], tileSize: 256, maxzoom: 14, attribution: S2_ATTRIBUTION } },
                 layers: [{ id: "s2", type: "raster", source: "s2" }],
               },
-        bounds: parcels.length ? bounds(parcels) : undefined,
+        bounds: view ?? (parcels.length ? bounds(parcels) : undefined),
         center: parcels.length ? undefined : [2.35, 6.45],
         zoom: parcels.length ? undefined : 9,
         fitBoundsOptions: { padding, maxZoom },
@@ -209,7 +212,7 @@ export function ParcelMap({
         const w = el.current?.clientWidth ?? 0;
         if (w > 0 && Math.abs(w - lastW) > 40 && parcelsRef.current.length) {
           const focus = parcelsRef.current.find((x) => x.nup === selectedRef.current);
-          m.fitBounds(bounds(focus ? [focus] : parcelsRef.current), { padding, maxZoom, duration: 0 });
+          m.fitBounds(focus ? bounds([focus]) : (view ?? bounds(parcelsRef.current)), { padding, maxZoom, duration: 0 });
         }
         lastW = w;
       });

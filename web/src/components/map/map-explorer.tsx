@@ -17,6 +17,9 @@ import type { RiskLevel } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 import { ParcelMap, type Basemap } from "./parcel-map";
 
+// Le sud (Atlantique, Littoral, Ouémé, Zou, Plateau) concentre presque tous les avis de publicité
+const SOUTH: [[number, number], [number, number]] = [[1.95, 6.3], [2.8, 7.5]];
+
 export type ExplorerParcel = {
   nup: string;
   polygon: [number, number][];
@@ -153,6 +156,7 @@ export function MapExplorer({ parcels, layers = [] }: { parcels: ExplorerParcel[
           padding={70}
           label="Carte des parcelles"
           layers={shown}
+          view={SOUTH}
           onSelect={setSelected}
         />
         <ToggleGroup
