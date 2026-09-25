@@ -76,3 +76,20 @@ Positionnement : **une couche d'intelligence au-dessus des systèmes de l'ANDF, 
 **À ne pas reprendre d'Ilèmi** : la double pile LangChain + AI SDK, les données d'analyse inventées, la relecture des GeoJSON à chaque requête, le test du domaine public par boîtes englobantes, les dossiers `dist/` et `.tmp/`.
 
 **Ordre recommandé** : A → B → C → D, avec E en parallèle dès qu'on a l'accord de principe de l'ANDF.
+
+## 5. État (25 septembre 2026)
+
+Les huit axes sont construits dans `web/` :
+
+| # | Livré | Où |
+|---|---|---|
+| A | 12 couches dans PostGIS (tuiles vectorielles, croisement par polygone), noms de personnes jamais stockés | `supabase/migrations/0001_layers.sql`, `scripts/load-layers.ts`, `/carte`, fiches parcelle |
+| B | Vérification par levé : documents fictifs pdfcn au contenu connu, lecture de la couche texte des PDF (pas d'OCR) | `/leve`, `lib/documents/extract.ts` |
+| C | Agent Ilèmi (AI SDK, OpenRouter) : 9 outils, UI générative, validation avant action ; modèle scripté sans clé | `/assistant`, `lib/agent/` |
+| D | Pré-contrôle des plans : géométrie, surface, zones bloquantes, chevauchement, risque de rejet appris sur les décisions `tf_en_cours` de la commune | `/pro/leves/nouveau`, `lib/geo/precheck.ts` |
+| E | Adaptateur ANDF en direct (API fiche + WFS, polygone réel), à la demande, cache 24 h, drapeau `ANDF_LIVE` | `lib/data/andf.ts` |
+| F | Accueil à trois gestes : NUP, levé, question à Ilèmi | `/` |
+| G | Dictée et lecture à voix haute (API du navigateur, français), limitation de débit par IP sur les routes IA | `lib/rate-limit.ts` |
+| H | Imagerie Digital Earth Africa GeoMAD 2017–2025 (CC BY 4.0) | `components/map/parcel-map.tsx` |
+
+Restent ouverts : fon et yoruba (modèle vocal dédié), modèle de rejet entraîné (règles pondérées aujourd'hui), convention ANDF avant d'activer `ANDF_LIVE` en public.

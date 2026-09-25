@@ -117,7 +117,7 @@
 
 | Source | Problème |
 |---|---|
-| **EOX Sentinel-2 cloudless** (utilisé aujourd'hui sur la page d'accueil) | CC BY-NC-SA ; usage commercial payant depuis 06/2026 → remplacer par DE Africa GeoMAD ou Sentinel-2 via Earth Search avant tout usage commercial |
+| **EOX Sentinel-2 cloudless** (abandonné le 25/09/2026) | CC BY-NC-SA ; usage commercial payant depuis 06/2026 → remplacer par DE Africa GeoMAD ou Sentinel-2 via Earth Search avant tout usage commercial |
 | Google Earth Engine / Dynamic World | Application web = usage commercial payant (exception possible pour une agence publique d'un PMA comme le Bénin) |
 | Esri World Imagery | Clé ArcGIS requise, pas de reproduction commerciale sans accord |
 | Planet NICFI | Programme gratuit terminé en 2025 |
@@ -145,7 +145,7 @@
 2. **ASIN / ANIP** : SSO NPI et X-Road BJ.
 3. **IGN / DGEFC** : routes officielles, forêts classées.
 4. **DGI** : valeurs administratives TFU à jour.
-5. **Licences** : EOX (commercial) ou bascule vers DE Africa ; Earth Engine si nécessaire.
+5. **Licences** : Imagerie basculée sur DE Africa GeoMAD (CC BY 4.0) ; Earth Engine si nécessaire.
 
 ---
 
@@ -154,7 +154,7 @@
 | Priorité | Travail | Écrans débloqués |
 |---|---|---|
 | 1 | Route `app/api/parcels/[nup]` : proxy `getInformationParcel` + WFS, cache, reprojection ; remplacer les données codées en dur de `lib/data/parcels.ts` | Accueil, `/parcelle/[nup]`, `/recherche` |
-| 2 | Imagerie : bascule EOX → DE Africa GeoMAD / Sentinel-2 STAC, découpée sur le vrai polygone | Fiche terrain, frise |
+| 2 | Imagerie : bascule EOX → DE Africa GeoMAD / Sentinel-2 STAC, découpée sur le vrai polygone | Fiche terrain, frise · ✅ fait (GeoMAD annuel) |
 | 3 | Scraper publicité (cron quotidien, diff, noms masqués) | `/publicite`, veille |
 | 4 | Catalogue service-public.bj en cache | `/guides`, `/outils/frais`, assistant |
 | 5 | Corpus RAG (SGG + FAOLEX + andf.bj, OCR) + Claude + pgvector | `/assistant` |
