@@ -20,6 +20,8 @@ export const fr = {
     submit: "Vérifier",
     tryLabel: "Essayez avec une parcelle réelle :",
     noNup: "Pas de NUP ? Vérifiez avec le levé du vendeur",
+    ask: "Une autre question ? Ilèmi, l'agent foncier, s'en charge",
+    askPlaceholder: "Ex. Combien coûte la mutation d'un terrain de 12 millions ?",
     invalid: "Un NUP compte 9 chiffres.",
     notFound: "Cette parcelle n'est pas encore dans la démonstration.",
     notFoundAction: "Consulter la fiche sur le cadastre ANDF",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  SparklesIcon,
   ArrowRightIcon,
   ExternalLinkIcon,
   SearchIcon,
@@ -126,6 +127,22 @@ export function ParcelVerifier() {
             </Link>
           </Field>
         </form>
+
+        {/* Troisième geste : une question libre, confiée à l'agent Ilèmi */}
+        <form action="/assistant" className="mt-5 max-w-xl">
+          <label htmlFor="ask" className="text-sm font-medium text-white/75">{t.ask}</label>
+          <InputGroup className="mt-2 h-11 rounded-md border-white/20 bg-white/5 text-white has-[[data-slot=input-group-control]:focus-visible]:ring-signal/60">
+            <InputGroupAddon className="pl-3">
+              <SparklesIcon className="size-4 text-signal" />
+            </InputGroupAddon>
+            <InputGroupInput id="ask" name="q" required autoComplete="off" placeholder={t.askPlaceholder} className="placeholder:text-white/50" />
+            <InputGroupAddon align="inline-end">
+              <Button type="submit" size="icon-sm" variant="ghost" aria-label="Demander à Ilèmi" className="text-white hover:bg-white/10 hover:text-white">
+                <ArrowRightIcon />
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
+        </form>
       </div>
 
       <div className="-mx-4 -mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mt-0 sm:block sm:overflow-visible sm:px-0 lg:col-span-6 lg:row-start-2 lg:self-start xl:col-span-5">
@@ -197,7 +214,7 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
           <p className="tabular font-display text-2xl font-extrabold tracking-[0.04em] text-navy">{parcel.nup}</p>
           <p className="mt-0.5 text-sm text-muted-foreground">{place || "Commune non précisée"}</p>
         </div>
-        <Badge variant="secondary" className="rounded-sm">{v.sample}</Badge>
+        <Badge variant="secondary" className="rounded-sm">{parcel.live ? "ANDF, consulté en direct" : v.sample}</Badge>
       </header>
 
       <figure className="relative max-lg:order-2">
