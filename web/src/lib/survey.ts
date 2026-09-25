@@ -62,3 +62,23 @@ export function conflicts(ring: Ring, parcels: Parcel[]): string[] {
     })
     .map((p) => p.nup);
 }
+
+/**
+ * Bornes lues dans le texte d'un plan (couche texte d'un PDF) : on repère les nombres qui ont la forme de
+ * coordonnées UTM 31N au Bénin (X de 250 000 à 650 000, Y de 690 000 à 1 400 000) et on les apparie dans l'ordre.
+ * ponytail: heuristique sans OCR ; suffit pour les PDF numériques, un OCR prendra le relais pour les scans.
+ */
+export function bornesFromText(text: string): [number, number][] {
+  const nums = [...text.matchAll(/\b(\d{6,7})(?:[.,](\d{1,3}))?\b/g)].map((m) => Number(`${m[1]}.${m[2] ?? 0}`));
+  const xs = nums.filter((n) => n >= 250_000 && n <= 650_000);
+  const ys = nums.filter((n) => n >= 690_000 && n <= 1_400_000);
+  const n = Math.min(xs.length, ys.length);
+  return n >= 3 ? Array.from({ length: n }, (_, i) => [xs[i], ys[i]] as [number, number]) : [];
+}
+
+/** Anneau WGS84 fermé à partir de bornes UTM 31N. */
+export function ringFromUtm(bornes: [number, number][]): Ring {
+  const ring = bornes.map(([x, y]) => utmToLonLat(x, y));
+  if (ring.length && (ring[0][0] !== ring.at(-1)![0] || ring[0][1] !== ring.at(-1)![1])) ring.push(ring[0]);
+  return ring;
+}

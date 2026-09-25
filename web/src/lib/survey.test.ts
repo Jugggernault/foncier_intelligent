@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { areaM2, parseSurvey, utmToLonLat } from "./survey";
+import { areaM2, bornesFromText, parseSurvey, ringFromUtm, utmToLonLat } from "./survey";
 
 test("import de levé", () => {
   const [lon, lat] = utmToLonLat(422946, 701870);
@@ -10,4 +10,14 @@ test("import de levé", () => {
   expect(ring.length).toBe(5);
   expect(Math.abs(areaM2(ring) - 600)).toBeLessThan(15);
   expect(() => parseSurvey("1;2")).toThrow();
+});
+
+test("bornes lues dans le texte d'un plan", () => {
+  // Ordre de lecture perturbé (colonnes), comme dans certains PDF
+  const text = "Borne X (m) Y (m) B1 422951.84 701866.23 B2 422971.64 701869.01 B3 B4 422968.16 422948.36 701893.77 701890.99 Superficie 500 m²";
+  const b = bornesFromText(text);
+  expect(b.length).toBe(4);
+  expect(b[3]).toEqual([422948.36, 701890.99]);
+  expect(areaM2(ringFromUtm(b))).toBeGreaterThan(450);
+  expect(bornesFromText("Téléphone 97000000")).toEqual([]);
 });
