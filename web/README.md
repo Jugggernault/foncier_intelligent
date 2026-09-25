@@ -14,6 +14,8 @@ bun run build
 
 ## Parcours de démonstration
 
+Scénario minuté pour une présentation : [`../DEMO.md`](../DEMO.md).
+
 1. **Public** : `/` → saisir un NUP (ex. `101236198`, terrain de l'État) → `/parcelle/101236198` → rapport PDF. Sans NUP : `/leve` (levés de démonstration dans `public/demo-docs/`). Une question : champ Ilèmi de l'accueil → `/assistant`. Aussi `/carte` (12 couches ANDF), `/publicite`, `/guides`, `/outils/*`.
 2. **Connexion** : « Mon espace » → « Entrer en démonstration » → choisir un profil. On change de profil depuis le menu en haut à droite.
 3. **Citoyenne** : vérifier avant d'acheter (`/espace/verifications/nouvelle`, bouton « Exemple » puis « pièces d'exemple »), déposer un dossier, faire opposition, porter plainte.
