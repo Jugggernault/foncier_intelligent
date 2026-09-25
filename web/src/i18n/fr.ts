@@ -127,7 +127,7 @@ export const fr = {
     columns: [
       { title: "Vérifier", links: [["Rechercher une parcelle", "/recherche"], ["Carte", "/carte"], ["Publicité foncière", "/publicite"]] },
       { title: "Comprendre", links: [["Démarches", "/guides"], ["Calcul des frais", "/outils/frais"], ["Qui peut acheter ?", "/outils/eligibilite"]] },
-      { title: "Le projet", links: [["À propos", "/a-propos"], ["Charte IA", "/ia-responsable"], ["Développeurs", "/developpeurs"]] },
+      { title: "Le projet", links: [["À propos", "/a-propos"], ["Impact", "/impact"], ["Charte IA", "/ia-responsable"], ["Développeurs", "/developpeurs"]] },
     ],
     legal: [["Confidentialité", "/confidentialite"], ["Conditions", "/conditions"]],
   },
