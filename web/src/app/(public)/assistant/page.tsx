@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Chat } from "@/components/assistant/chat";
+import { AgentChat } from "@/components/assistant/agent-chat";
 
-export const metadata: Metadata = { title: "Assistant foncier · Foncier Intelligent" };
+export const metadata: Metadata = { title: "Ilèmi, l'agent foncier · Foncier Intelligent" };
 
 export default async function AssistantPage({ searchParams }: PageProps<"/assistant">) {
   const q = (await searchParams).q;
-  return <Chat initial={typeof q === "string" ? q : undefined} />;
+  return <AgentChat initial={typeof q === "string" ? q : undefined} />;
 }
