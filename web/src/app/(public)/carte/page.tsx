@@ -1,8 +1,8 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import type { Metadata } from "next";
 import { MapExplorer, type ExplorerParcel } from "@/components/map/map-explorer";
 import { isPublicityOpen, listParcels } from "@/lib/data/parcels";
 import { fmtArea, rightLabel } from "@/lib/labels";
-import { assess } from "@/lib/risk";
 import { listLayers } from "@/lib/geo/layers";
 
 // Les fenêtres de publicité dépendent du jour : régénération horaire.
@@ -11,8 +11,9 @@ export const revalidate = 3600;
 export const metadata: Metadata = { title: "Carte des parcelles · Foncier Intelligent" };
 
 export default async function MapPage() {
+  const judge = await verdictFn();
   const parcels: ExplorerParcel[] = listParcels().map((p) => {
-    const r = assess(p);
+    const r = judge(p);
     return {
       nup: p.nup,
       polygon: p.polygon,

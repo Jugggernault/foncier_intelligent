@@ -19,9 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { climate, type Level } from "@/lib/climate";
 import { cadastreUrl, getParcel, isPublicityOpen, neighbours } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
-import { assessFull } from "@/lib/geo/verdict";
+import { assessFull, verdictFn } from "@/lib/geo/verdict";
 import { LayerFindings } from "@/components/parcel/layer-findings";
-import { assess } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata({ params }: PageProps<"/parcelle/[nup]">): Promise<Metadata> {
@@ -36,6 +35,7 @@ const CLIMATE_TONE: Record<Level, string> = {
 };
 
 export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]">) {
+  const judge = await verdictFn();
   const { nup } = await params;
   const p = getParcel(nup);
   if (!p) notFound();
@@ -100,7 +100,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
           <ParcelExplorer
             parcel={{ nup: p.nup, polygon: p.polygon, level: result.level }}
             layers={hits.map((h) => h.layerId)}
-            neighbours={near.map((n) => ({ nup: n.nup, polygon: n.polygon, level: assess(n).level }))}
+            neighbours={near.map((n) => ({ nup: n.nup, polygon: n.polygon, level: judge(n).level }))}
           />
           <p className="mt-2 text-xs text-muted-foreground">
             Emprise {p.real ? "approximative, déduite du centroïde et de la superficie publiés" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
@@ -239,7 +239,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
           <h2 className="text-lg font-bold text-navy">Parcelles voisines</h2>
           <ItemGroup className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {near.map((n) => {
-              const r = assess(n);
+              const r = judge(n);
               const Icon = LEVEL[r.level].icon;
               return (
                 <Item key={n.nup} variant="outline" render={<Link href={`/parcelle/${n.nup}`} />}>

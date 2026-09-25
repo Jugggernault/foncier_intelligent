@@ -1,3 +1,4 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
@@ -6,16 +7,16 @@ import { Verdict } from "@/components/parcel/verdict";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PORTFOLIO } from "@/lib/data/pro";
 import { fmtDate, fmtFcfa } from "@/lib/labels";
-import { assess } from "@/lib/risk";
 
 export const metadata: Metadata = { title: "Garantie · Espace professionnel" };
 
 export default async function Collateral({ params }: PageProps<"/pro/portefeuille/[nup]">) {
+  const judge = await verdictFn();
   const { nup } = await params;
   const c = PORTFOLIO.find((x) => x.parcel.nup === nup);
   if (!c) notFound();
   const p = c.parcel;
-  const r = assess(p);
+  const r = judge(p);
   return (
     <>
       <SpaceHeader title={`Garantie · ${p.nup}`} lead={`${c.borrower} · encours ${fmtFcfa(c.loan)} depuis le ${fmtDate(c.since, "long")}`} />

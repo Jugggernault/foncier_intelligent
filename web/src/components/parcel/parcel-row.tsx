@@ -1,15 +1,16 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import type { Parcel } from "@/lib/data/types";
 import { fmtArea, rightLabel } from "@/lib/labels";
-import { assess } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 import { LEVEL } from "./verdict";
 
 /** Ligne de liste cliquable : verdict, NUP, localisation. */
-export function ParcelRow({ parcel, href, aside }: { parcel: Parcel; href?: string; aside?: React.ReactNode }) {
-  const r = assess(parcel);
+export async function ParcelRow({ parcel, href, aside }: { parcel: Parcel; href?: string; aside?: React.ReactNode }) {
+  const judge = await verdictFn();
+  const r = judge(parcel);
   const Icon = LEVEL[r.level].icon;
   return (
     <Item variant="outline" className="bg-card" render={<Link href={href ?? `/parcelle/${parcel.nup}`} />}>

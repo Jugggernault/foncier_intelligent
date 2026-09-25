@@ -1,3 +1,4 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,14 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getParcel, neighbours } from "@/lib/data/parcels";
 import { KIND_LABEL, LITIGES, listDossiers } from "@/lib/data/workflow";
 import { fmtArea, rightLabel } from "@/lib/labels";
-import { assess } from "@/lib/risk";
 
 export const metadata: Metadata = { title: "Fiche interne · Espace agent" };
 
 export default async function InternalParcel({ params }: PageProps<"/agent/parcelles/[nup]">) {
+  const judge = await verdictFn();
   const p = getParcel((await params).nup);
   if (!p) notFound();
-  const r = assess(p);
+  const r = judge(p);
   const dossiers = listDossiers().filter((d) => d.nup === p.nup);
   const litiges = LITIGES.filter((l) => l.nup === p.nup);
   return (
@@ -25,7 +26,7 @@ export default async function InternalParcel({ params }: PageProps<"/agent/parce
       <SpaceBody>
         <div className="grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <ParcelExplorer parcel={{ nup: p.nup, polygon: p.polygon, level: r.level }} neighbours={neighbours(p, 2500).slice(0, 10).map((n) => ({ nup: n.nup, polygon: n.polygon, level: assess(n).level }))} />
+            <ParcelExplorer parcel={{ nup: p.nup, polygon: p.polygon, level: r.level }} neighbours={neighbours(p, 2500).slice(0, 10).map((n) => ({ nup: n.nup, polygon: n.polygon, level: judge(n).level }))} />
           </div>
           <div className="space-y-6 lg:col-span-5">
             <Verdict result={r} />

@@ -1,3 +1,4 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
@@ -5,13 +6,13 @@ import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DEEDS, MUTATIONS, PORTFOLIO, SURVEYS } from "@/lib/data/pro";
-import { assess } from "@/lib/risk";
 import { requirePersona } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Tableau de bord · Espace professionnel" };
 
 export default async function ProHome() {
+  const judge = await verdictFn();
   const persona = await requirePersona("pro");
   const blocks: Record<string, { title: string; lines: string[]; cta: [string, string] }[]> = {
     notaire: [
@@ -25,7 +26,7 @@ export default async function ProHome() {
       { title: "Actes", lines: [`${DEEDS.filter((d) => d.status === "demandee").length} demandes en cours`, "Délai : 24 h"], cta: ["Demander un acte", "/pro/actes/nouveau"] },
     ],
     banque: [
-      { title: "Garanties", lines: [`${PORTFOLIO.length} parcelles en garantie`, `${PORTFOLIO.filter((c) => assess(c.parcel).level !== "clear").length} avec un signal d'alerte`], cta: ["Voir le portefeuille", "/pro/portefeuille"] },
+      { title: "Garanties", lines: [`${PORTFOLIO.length} parcelles en garantie`, `${PORTFOLIO.filter((c) => judge(c.parcel).level !== "clear").length} avec un signal d'alerte`], cta: ["Voir le portefeuille", "/pro/portefeuille"] },
       { title: "Vérification avant crédit", lines: ["Score de risque et valeur estimée", "Accessible aussi par API"], cta: ["Nouvelle vérification", "/pro/due-diligence/nouvelle"] },
     ],
   };

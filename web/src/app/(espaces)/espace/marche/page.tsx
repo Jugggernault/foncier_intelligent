@@ -1,3 +1,4 @@
+import { verdictFn } from "@/lib/geo/verdict";
 import type { Metadata } from "next";
 import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
 import { ParcelRow } from "@/components/parcel/parcel-row";
@@ -5,14 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { ItemGroup } from "@/components/ui/item";
 import { listParcels } from "@/lib/data/parcels";
 import { fmtFcfa } from "@/lib/labels";
-import { assess } from "@/lib/risk";
 
 export const metadata: Metadata = { title: "Parcelles recommandées · Foncier Intelligent" };
 
-export default function Market() {
+export default async function Market() {
+  const judge = await verdictFn();
   // ponytail: « recommandation » = filtre feu vert + tri par prix ; moteur de recommandation prévu en V3 (IA-16)
   const picks = listParcels()
-    .filter((p) => p.landUse === "urbain" && assess(p).level === "clear")
+    .filter((p) => p.landUse === "urbain" && judge(p).level === "clear")
     .sort((a, b) => a.pricePerM2.low * a.areaM2 - b.pricePerM2.low * b.areaM2)
     .slice(0, 12);
   return (

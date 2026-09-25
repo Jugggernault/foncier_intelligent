@@ -3,7 +3,7 @@
 import type { Parcel } from "./data/types";
 import { KIND_LABEL, type Dossier } from "./data/workflow";
 import { fmtArea, fmtDate } from "./labels";
-import { assess } from "./risk";
+import { assess, layerReasons, type LayerFinding } from "./risk";
 
 export type Anomaly = { severity: "haute" | "moyenne" | "basse"; text: string; source: string };
 export type CopilotOutput = {
@@ -14,9 +14,9 @@ export type CopilotOutput = {
   draft: string;
 };
 
-export function copilot(d: Dossier, p: Parcel): CopilotOutput {
+export function copilot(d: Dossier, p: Parcel, hits: LayerFinding[] = []): CopilotOutput {
   const anomalies: Anomaly[] = [];
-  const risk = assess(p);
+  const risk = assess(p, new Date(), hits);
 
   for (const doc of d.documents) {
     if (doc.status === "missing") anomalies.push({ severity: "moyenne", text: `Pièce manquante : ${doc.name.toLowerCase()}.`, source: "Lecture des pièces" });
@@ -32,6 +32,9 @@ export function copilot(d: Dossier, p: Parcel): CopilotOutput {
   }
   if (p.owner.kind === "state") anomalies.push({ severity: "haute", text: "La parcelle est inscrite au domaine de l'État.", source: "Cadastre" });
   if (p.dispute) anomalies.push({ severity: "haute", text: `Litige déclaré (${p.dispute.body}) depuis le ${fmtDate(p.dispute.since)}.`, source: "Registre des litiges" });
+  for (const r of layerReasons(hits)) {
+    if (r.level !== "clear") anomalies.push({ severity: r.level === "danger" ? "haute" : "moyenne", text: r.text, source: "Couches géographiques ANDF" });
+  }
   for (const a of p.alerts) anomalies.push({ severity: "basse", text: `${a.text} (${fmtDate(a.date)})`, source: "Imagerie satellite" });
 
   const high = anomalies.some((a) => a.severity === "haute");
