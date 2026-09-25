@@ -3,6 +3,7 @@ export const fr = {
   brand: "Foncier Intelligent",
   nav: [
     { href: "/recherche", label: "Vérifier" },
+    { href: "/leve", label: "Levé" },
     { href: "/carte", label: "Carte" },
     { href: "/publicite", label: "Publicité foncière" },
     { href: "/guides", label: "Démarches" },
@@ -18,6 +19,7 @@ export const fr = {
     placeholder: "Ex. 101236198",
     submit: "Vérifier",
     tryLabel: "Essayez avec une parcelle réelle :",
+    noNup: "Pas de NUP ? Vérifiez avec le levé du vendeur",
     invalid: "Un NUP compte 9 chiffres.",
     notFound: "Cette parcelle n'est pas encore dans la démonstration.",
     notFoundAction: "Consulter la fiche sur le cadastre ANDF",

@@ -117,6 +117,9 @@ export function ParcelVerifier() {
                 {error}
               </FieldError>
             )}
+            <Link href="/leve" className="mt-1 w-fit text-sm font-medium text-white/80 underline underline-offset-4 hover:text-white">
+              {t.noNup} →
+            </Link>
           </Field>
         </form>
       </div>
