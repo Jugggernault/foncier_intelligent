@@ -17,3 +17,7 @@ ilemi-main/
 
 # Avis de publicité recopiés : contiennent noms et téléphones de particuliers
 hackathon_documents/pub-foncières.txt
+
+# Documents de travail, gardés en local seulement
+hackathon_documents/
+deep-research-report*.md

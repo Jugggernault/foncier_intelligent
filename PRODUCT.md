@@ -53,8 +53,7 @@ Identité visuelle épinglée par l'utilisateur : ADN du portail innovation.gouv
 
 ## Evidence on Hand
 
-- `hackathon_documents/` : missions ANDF, e-services et tarifs, avis de publicité foncière réels (NUP 101236198, 101236087, 101236307, 101232574, 100666667), textes réglementaires, chiffres du cadastre.
-- `deep-research-report(1).md` (partiellement dépassé, voir PRD § 1.4).
+- Documents de travail (non publiés) : missions ANDF, e-services et tarifs, avis de publicité foncière, textes réglementaires, chiffres du cadastre.
 - Aucun témoignage, client, chiffre d'impact mesuré ou partenariat signé : ne pas en inventer.
 
 ## Product Principles

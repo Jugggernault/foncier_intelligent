@@ -66,7 +66,7 @@ app/
 | `/parcelle/[nup]` · Climat | | Score inondation / érosion | IA-06 | 🟡 Sentinel-1 |
 | `/parcelle/[nup]/rapport` | Rapport de due diligence | Aperçu imprimable, export PDF signé/horodaté | FP-06 | 🟢 génération ; données mixtes |
 | `/carte` | Explorateur | Carte plein écran, couches (parcelles, domaine État, forêts classées, zones inondables, publicité en cours), panneau latéral de parcelle | CA-01 | 🟢 fonds OSM ; 🟡 couches ouvertes ; 🔴 parcelles |
-| `/assistant` | Assistant foncier | Chat sourcé (articles cités), suggestions de questions, outils : fiche NUP, calcul de frais, suivi | IA-09, AS-01 | 🟢 LLM + RAG sur `hackathon_documents/` et textes de loi |
+| `/assistant` | Assistant foncier | Chat sourcé (articles cités), suggestions de questions, outils : fiche NUP, calcul de frais, suivi | IA-09, AS-01 | 🟢 LLM + RAG sur les fiches ANDF et textes de loi |
 | `/publicite` | Avis de publicité foncière | Liste + carte des avis en cours, compte à rebours d'opposition, filtre commune | PU-01 | 🟡 scraping du site ANDF ; 🟢 5 avis réels |
 | `/publicite/[id]` | Détail d'un avis | Texte original, données extraites, parcelles voisines, « s'abonner », « faire opposition » | PU-01→03, IA-11 | 🟢 extraction LLM |
 | `/guides` | Procédures | Cartes : acheter en urbain, en rural, étrangers, titre foncier, mutation, certificat d'appartenance, opposition, plainte | — | 🟢 contenu réel |

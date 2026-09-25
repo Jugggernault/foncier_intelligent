@@ -1,4 +1,4 @@
-// Guides de démarches, rédigés à partir des fiches ANDF / service-public.bj (hackathon_documents/).
+// Guides de démarches, rédigés à partir des fiches ANDF et service-public.bj.
 // ponytail: contenu statique ; à synchroniser avec l'API service-public.bj (DATA_SOURCES.md § 3.1).
 
 export type Guide = {
