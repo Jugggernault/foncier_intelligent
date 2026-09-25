@@ -1,6 +1,6 @@
 // Estimation de valeur (IA-13), démonstration : médiane des prix au m² des parcelles connues par commune et type de zone.
 // ponytail: médiane simple ; remplacer par un modèle entraîné sur annonces + mutations (DATA_SOURCES.md § 2).
-import { listParcels } from "./data/parcels";
+import { allParcels } from "./data/parcels";
 
 export type PriceRef = { commune: string; zone: "loti" | "non-loti"; low: number; high: number; count: number };
 
@@ -11,7 +11,7 @@ const median = (xs: number[]) => {
 
 export function priceReferences(): PriceRef[] {
   const groups = new Map<string, { commune: string; zone: "loti" | "non-loti"; lows: number[]; highs: number[] }>();
-  for (const p of listParcels().filter((p) => p.landUse === "urbain")) {
+  for (const p of allParcels().filter((p) => p.landUse === "urbain")) {
     const k = `${p.commune}|${p.zone}`;
     const g = groups.get(k) ?? { commune: p.commune, zone: p.zone, lows: [], highs: [] };
     g.lows.push(p.pricePerM2.low);

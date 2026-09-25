@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/app/workflow-bits";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { ENCROACHMENTS } from "@/lib/data/agent";
-import { isPublicityOpen, listParcels } from "@/lib/data/parcels";
+import { isPublicityOpen, allParcels } from "@/lib/data/parcels";
 import { KIND_LABEL, listDossiers } from "@/lib/data/workflow";
 import { daysUntil, fmtDate } from "@/lib/labels";
 
@@ -16,7 +16,7 @@ export default function AgentHome() {
   const queue = listDossiers()
     .filter((d) => ["depose", "instruction", "complement"].includes(d.status))
     .sort((a, b) => b.anomalyScore - a.anomalyScore || a.dueAt.localeCompare(b.dueAt));
-  const closing = listParcels().filter((p) => isPublicityOpen(p)).sort((a, b) => a.procedure!.publicity.end.localeCompare(b.procedure!.publicity.end)).slice(0, 5);
+  const closing = allParcels().filter((p) => isPublicityOpen(p)).sort((a, b) => a.procedure!.publicity.end.localeCompare(b.procedure!.publicity.end)).slice(0, 5);
   const fresh = ENCROACHMENTS.filter((e) => e.status === "nouvelle");
 
   return (

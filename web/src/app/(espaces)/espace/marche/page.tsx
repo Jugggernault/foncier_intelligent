@@ -4,7 +4,7 @@ import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
 import { ParcelRow } from "@/components/parcel/parcel-row";
 import { Badge } from "@/components/ui/badge";
 import { ItemGroup } from "@/components/ui/item";
-import { listParcels } from "@/lib/data/parcels";
+import { allParcels } from "@/lib/data/parcels";
 import { fmtFcfa } from "@/lib/labels";
 
 export const metadata: Metadata = { title: "Parcelles recommandées · Foncier Intelligent" };
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Parcelles recommandées · Foncier I
 export default async function Market() {
   const judge = await verdictFn();
   // ponytail: « recommandation » = filtre feu vert + tri par prix ; moteur de recommandation prévu en V3 (IA-16)
-  const picks = listParcels()
+  const picks = allParcels()
     .filter((p) => p.landUse === "urbain" && judge(p).level === "clear")
     .sort((a, b) => a.pricePerM2.low * a.areaM2 - b.pricePerM2.low * b.areaM2)
     .slice(0, 12);

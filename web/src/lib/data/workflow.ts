@@ -1,6 +1,6 @@
 // Dossiers, litiges, paiements et vérifications de démonstration, partagés entre l'espace citoyen et l'espace agent.
 // ponytail: jeu statique dérivé des parcelles mock ; à remplacer par e-Foncier (accès partenaire ANDF).
-import { listParcels } from "./parcels";
+import { allParcels } from "./parcels";
 import type { Parcel } from "./types";
 
 const DAY = 86_400_000;
@@ -109,7 +109,7 @@ function documents(kind: DossierKind, p: Parcel, i: number): DocCheck[] {
 }
 
 function buildDossiers(): Dossier[] {
-  const parcels = listParcels().filter((p) => p.owner.kind === "private");
+  const parcels = allParcels().filter((p) => p.owner.kind === "private");
   const kinds: DossierKind[] = ["titre", "titre", "mutation", "appartenance", "titre", "etat-descriptif", "morcellement", "titre"];
   return parcels.slice(0, 42).map((p, i) => {
     const [applicant, initials] = APPLICANTS[i % APPLICANTS.length];
@@ -149,7 +149,7 @@ export const listDossiers = () => DOSSIERS;
 export const getDossier = (id: string) => DOSSIERS.find((d) => d.id === id);
 export const dossiersOf = (initials: string) => DOSSIERS.filter((d) => d.applicantInitials === initials).slice(0, 3);
 
-export const LITIGES: Litige[] = listParcels()
+export const LITIGES: Litige[] = allParcels()
   .filter((p) => p.dispute)
   .map((p, i) => ({
     id: `L-2026-${String(310 + i).padStart(4, "0")}`,

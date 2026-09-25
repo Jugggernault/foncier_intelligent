@@ -1,6 +1,6 @@
 // Adaptateur ANDF en direct (ANDF_LIVE=true) : API fiche parcelle + WFS efb_parcel, à la demande, cache 24 h.
 // ponytail: aucune indexation en masse (DATA_SOURCES.md § 9) ; seules les parcelles demandées sont lues.
-import { PARCELS } from "./mock";
+import { REAL_PARCELS as PARCELS } from "./mock";
 import type { Parcel } from "./types";
 
 const API = "https://b-cadastre.andf.bj:9293/getInformationParcel";
@@ -51,7 +51,8 @@ function toParcel(p: Props, geom: { type: string; coordinates: number[][][] | nu
   const ring = (geom.type === "MultiPolygon" ? (geom.coordinates as number[][][][])[0][0] : (geom.coordinates as number[][][])[0]) as [number, number][];
   const lon = ring.reduce((s, c) => s + c[0], 0) / ring.length;
   const lat = ring.reduce((s, c) => s + c[1], 0) / ring.length;
-  const state = /state|public/i.test(p.register_type);
+  // ponytail: register_type ne dit pas qui possède (une parcelle de l'État peut être « privateParcel ») ; seul « state… » est retenu
+  const state = /^state/i.test(p.register_type);
   const peers = PARCELS.filter((x) => x.commune === p.commune_name);
   const avg = (k: "low" | "high") => (peers.length ? Math.round(peers.reduce((s, x) => s + x.pricePerM2[k], 0) / peers.length) : k === "low" ? 15_000 : 35_000);
   return {

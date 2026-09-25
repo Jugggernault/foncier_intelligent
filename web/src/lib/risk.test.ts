@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { getParcel, listParcels } from "./data/parcels";
+import { getParcel, allParcels } from "./data/parcels";
 import { assess } from "./risk";
 
 test("parcelle de l'État = danger", () => {
@@ -14,7 +14,7 @@ test("droit présumé avec titre en cours = prudence, publicité ouverte détect
 });
 
 test("litige = danger, titre sans signal = vert", () => {
-  const all = listParcels();
+  const all = allParcels();
   const disputed = all.find((p) => p.dispute)!;
   expect(assess(disputed).level).toBe("danger");
   const clean = all.find((p) => p.right === "titre" && !p.dispute && !p.alerts.length && p.landUse === "urbain")!;
@@ -22,13 +22,13 @@ test("litige = danger, titre sans signal = vert", () => {
 });
 
 test("les NUP de démonstration sont uniques et au format", () => {
-  const nups = listParcels().map((p) => p.nup);
+  const nups = allParcels().map((p) => p.nup);
   expect(new Set(nups).size).toBe(nups.length);
   expect(nups.every((n) => /^\d{9}$/.test(n))).toBe(true);
 });
 
 test("les couches ANDF alimentent le verdict", () => {
-  const p = listParcels().find((x) => x.right === "titre" && !x.dispute && !x.alerts.length && x.landUse === "urbain")!;
+  const p = allParcels().find((x) => x.right === "titre" && !x.dispute && !x.alerts.length && x.landUse === "urbain")!;
   const zdup = assess(p, new Date(), [{ layerId: "restriction", label: "Restriction", severity: "danger", share: 1, props: { type: "ZDUP", designation: "Route des Pêches" } }]);
   expect(zdup.level).toBe("danger");
   expect(zdup.headline).toContain("projet public");

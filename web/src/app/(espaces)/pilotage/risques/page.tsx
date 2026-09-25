@@ -3,16 +3,16 @@ import { SpaceBody, SpaceHeader } from "@/components/app/space-header";
 import { SimpleBarChart } from "@/components/app/bar-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ENCROACHMENTS } from "@/lib/data/agent";
-import { listParcels } from "@/lib/data/parcels";
+import { allParcels } from "@/lib/data/parcels";
 import { LITIGES } from "@/lib/data/workflow";
 import { climate } from "@/lib/climate";
 
 export const metadata: Metadata = { title: "Risques · Pilotage" };
 
 export default function Risks() {
-  const communes = [...new Set(listParcels().map((p) => p.commune))];
-  const litigesBy = communes.map((c) => ({ name: c, value: LITIGES.filter((l) => listParcels().find((p) => p.nup === l.nup)?.commune === c).length }));
-  const flood = communes.map((c) => ({ name: c, value: listParcels().filter((p) => p.commune === c && climate(p).flood === "élevé").length }));
+  const communes = [...new Set(allParcels().map((p) => p.commune))];
+  const litigesBy = communes.map((c) => ({ name: c, value: LITIGES.filter((l) => allParcels().find((p) => p.nup === l.nup)?.commune === c).length }));
+  const flood = communes.map((c) => ({ name: c, value: allParcels().filter((p) => p.commune === c && climate(p).flood === "élevé").length }));
   return (
     <>
       <SpaceHeader title="Risques" lead={`${ENCROACHMENTS.filter((e) => e.status !== "faux-positif").length} empiètements actifs sur le domaine public, ${LITIGES.length} litiges, parcelles en zone inondable par commune.`} />

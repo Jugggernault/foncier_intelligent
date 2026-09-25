@@ -1,5 +1,5 @@
 import "server-only";
-import { listParcels } from "../data/parcels";
+import { allParcels } from "../data/parcels";
 import type { Parcel } from "../data/types";
 import { assess, type Assessment } from "../risk";
 import { db } from "./db";
@@ -17,7 +17,7 @@ function hitsIndex(): Promise<Map<string, LayerHit[]>> {
     const sql = db();
     if (!sql) return map;
     try {
-      const input = listParcels().map((p) => ({ nup: p.nup, geom: { type: "Polygon", coordinates: [p.polygon] } }));
+      const input = allParcels().map((p) => ({ nup: p.nup, geom: { type: "Polygon", coordinates: [p.polygon] } }));
       const rows = await sql<Row[]>`
         with p as (
           select x.nup, st_makevalid(st_setsrid(st_geomfromgeojson(x.geom::text), 4326)) as g
@@ -53,7 +53,7 @@ function hitsIndex(): Promise<Map<string, LayerHit[]>> {
 /** Verdict complet : règles de la parcelle + couches géographiques ANDF. */
 export async function assessFull(p: Parcel): Promise<{ hits: LayerHit[]; result: Assessment }> {
   const known = (await hitsIndex()).get(p.nup);
-  const hits = known ?? (listParcels().some((x) => x.nup === p.nup) ? [] : await layersAt(p.polygon));
+  const hits = known ?? (allParcels().some((x) => x.nup === p.nup) ? [] : await layersAt(p.polygon));
   return { hits, result: assess(p, new Date(), hits) };
 }
 

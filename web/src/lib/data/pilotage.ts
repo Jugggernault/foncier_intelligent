@@ -1,6 +1,6 @@
 // Indicateurs nationaux de démonstration (PRD § 13) et cas LCB-FT.
 // ponytail: valeurs fictives cohérentes ; sources prévues : statistiques ANDF (PDF), e-Foncier, DGI.
-import { listParcels } from "./parcels";
+import { allParcels } from "./parcels";
 
 export const KPIS = [
   { label: "Délai moyen d'un titre foncier", unit: "jours", start: 120, now: 96, target: 60, lowerIsBetter: true },
@@ -43,7 +43,7 @@ export type GraphNode = { id: string; label: string; kind: "personne" | "societe
 export type GraphEdge = { from: string; to: string; label: string };
 export type AmlCase = { id: string; title: string; score: number; pattern: string; status: "ouvert" | "transmis-centif" | "clos"; nodes: GraphNode[]; edges: GraphEdge[]; timeline: [string, string][] };
 
-const rural = listParcels().filter((p) => p.landUse === "rural" && !p.real);
+const rural = allParcels().filter((p) => p.landUse === "rural" && !p.real);
 
 export const AML_CASES: AmlCase[] = [
   {

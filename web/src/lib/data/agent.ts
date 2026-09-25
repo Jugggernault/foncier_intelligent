@@ -1,6 +1,6 @@
 // Données de l'espace agent : alertes d'empiètement, missions terrain, qualité du cadastre, rural, numérisation.
 // ponytail: dérivées des parcelles mock ; brancher la détection de changement Sentinel et le WFS ANDF (DATA_SOURCES.md).
-import { getParcel, listParcels } from "./parcels";
+import { getParcel, allParcels } from "./parcels";
 import type { Parcel } from "./types";
 import { listDossiers } from "./workflow";
 
@@ -18,7 +18,7 @@ export const ENCROACHMENT_LABEL: Record<EncroachmentStatus, string> = {
   "faux-positif": "Faux positif",
 };
 
-const statePlots = listParcels().filter((p) => p.right === "etat");
+const statePlots = allParcels().filter((p) => p.right === "etat");
 
 export const ENCROACHMENTS: Encroachment[] = statePlots.map((p, i) => ({
   id: `E-${String(801 + i).padStart(4, "0")}`,
@@ -79,7 +79,7 @@ function bbox(p: Parcel) {
 }
 
 export function overlaps(): Overlap[] {
-  const ps = listParcels();
+  const ps = allParcels();
   const out: Overlap[] = [];
   for (let i = 0; i < ps.length; i++)
     for (let j = i + 1; j < ps.length; j++) {
@@ -113,7 +113,7 @@ export const PRETRACE: PretraceLot[] = [
 
 export type RuralCase = { nup: string; areaHa: number; price: number; buyer: string; deadline: string; kind: "preemption" | "mise-en-valeur" | "origine-fonds"; ndvi: number[]; expected: number; proof?: "fournie" | "manquante" | "a-verifier" };
 
-const rural = listParcels().filter((p) => p.landUse === "rural");
+const rural = allParcels().filter((p) => p.landUse === "rural");
 
 export const RURAL: RuralCase[] = rural.map((p, i) => ({
   nup: p.nup,

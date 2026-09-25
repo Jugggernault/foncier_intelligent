@@ -22,7 +22,7 @@ export default async function NoticePage({ params }: PageProps<"/publicite/[nup]
   const open = isPublicityOpen(p);
   const near = neighbours(p, 800);
   const pr = p.procedure;
-  const requester = p.owner.kind === "state" ? "le Chef du Bureau communal du Domaine et du Foncier, au nom de l'État béninois" : `un particulier (${p.owner.initials})`;
+  const requester = p.owner.kind === "state" ? "le Chef du Bureau communal du Domaine et du Foncier, au nom de l'État béninois" : p.owner.initials === "—" ? "un particulier ou une personne morale (identité non reprise ici)" : `un particulier (${p.owner.initials})`;
 
   return (
     <>

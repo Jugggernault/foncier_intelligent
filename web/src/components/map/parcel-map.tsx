@@ -155,7 +155,8 @@ export function ParcelMap({
         },
       });
       m.addControl(new ml.NavigationControl({ showCompass: false }), "top-right");
-      m.on("load", () => {
+      // « style.load » plutôt que « load » : n'attend pas que toutes les tuiles du fond soient arrivées
+      m.once("style.load", () => {
         // Attribution repliée par défaut (bouton ⓘ) pour ne pas masquer la parcelle
         m.getContainer().querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
         // Au-dessus du fond (libellés compris), sous les couches et les parcelles

@@ -1,11 +1,11 @@
 // Données de la citoyenne de démonstration (persona « citoyen », Afi Houngbédji).
-import { getParcel, isPublicityOpen, listParcels, neighbours } from "./parcels";
+import { getParcel, isPublicityOpen, allParcels, neighbours } from "./parcels";
 import type { Parcel } from "./types";
 import { dossiersOf, LITIGES } from "./workflow";
 
 export const ME = { initials: "AH", name: "Afi Houngbédji", npi: "1083421907", phone: "+229 01 97 00 00 00", email: "afi.h@example.bj" };
 
-const privates = listParcels().filter((p) => p.owner.kind === "private" && !p.real);
+const privates = allParcels().filter((p) => p.owner.kind === "private" && !p.real);
 
 /** Parcelles dont elle est titulaire : une titrée à Cotonou, une présumée à Calavi, une en litige. */
 export const OWNED: Parcel[] = [

@@ -1,5 +1,6 @@
 // Jeu de démonstration : 5 parcelles réelles (avis ANDF, polygones du WFS efb_parcel) et des parcelles fictives
 // générées de façon déterministe. ponytail: remplacé commune par commune quand l'API ANDF sera branchée.
+import publicity from "../../content/publicity-parcels.json";
 import realRings from "../../content/real-parcels.json";
 import type { LatLon, Parcel, RightType, TerrainAlert } from "./types";
 
@@ -128,7 +129,47 @@ const REAL: Parcel[] = [
   },
 ].map((p) => ({ ...p, polygon: (realRings as unknown as Record<string, [number, number][]>)[p.nup] }) as Parcel); // polygones réels (WFS ANDF)
 
-// ---- Parcelles fictives ----------------------------------------------------
+// ---- Parcelles des avis de publicité foncière (andf.bj + WFS efb_parcel) ----
+// Réelles : NUP, localisation, surface, polygone et dates d'opposition. Jamais le nom du demandeur.
+
+type Notice = (typeof publicity)[number];
+const title = (s: string) => s.toLowerCase().replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
+const PRICE: Record<string, { low: number; high: number }> = {
+  Littoral: { low: 60000, high: 150000 },
+  Atlantique: { low: 10000, high: 30000 },
+  Ouémé: { low: 15000, high: 40000 },
+};
+
+function fromNotice(n: Notice): Parcel {
+  const ring = n.polygon as [number, number][];
+  const pts = ring.slice(0, -1);
+  const state = n.requester === "state";
+  const department = title(n.department);
+  return {
+    nup: n.nup,
+    department,
+    commune: title(n.commune),
+    arrondissement: title(n.arrondissement),
+    quartier: n.quartier,
+    areaM2: n.areaM2,
+    nature: state ? "ETAT" : "Individuelle",
+    right: state ? "etat" : n.titleNumber ? "titre" : "presume",
+    owner: state ? { kind: "state" } : { kind: "private", initials: "—" },
+    landUse: n.areaM2 > 20000 ? "rural" : "urbain",
+    zone: "non-loti",
+    titleNumber: n.titleNumber ?? undefined,
+    center: { lat: +(pts.reduce((s, c) => s + c[1], 0) / pts.length).toFixed(6), lon: +(pts.reduce((s, c) => s + c[0], 0) / pts.length).toFixed(6) },
+    polygon: ring,
+    procedure: { kind: n.kind as "titre" | "confirmation", requestNumber: n.requestNumber ?? "—", requestDate: n.requestDate ?? n.publicity.start, publicity: n.publicity },
+    alerts: [],
+    pricePerM2: PRICE[department] ?? { low: 3000, high: 12000 },
+    real: true,
+  };
+}
+
+const NOTICES = publicity.filter((n) => !REAL.some((r) => r.nup === n.nup)).map(fromNotice);
+
+// ---- Parcelles fictives (espaces de travail) --------------------------------
 
 type Place = { department: string; commune: string; center: LatLon; areas: string[][]; price: [number, number]; rural?: boolean };
 
@@ -228,5 +269,8 @@ function generate(count: number, now: number): Parcel[] {
   return out;
 }
 
-// ponytail: fenêtre de publicité relative au jour du build ; fixer DEMO_TODAY si la démo doit être rejouable à date fixe
-export const PARCELS: Parcel[] = [...REAL, ...generate(140, Date.now())];
+/** Parcelles réelles, seules montrées au public (carte, recherche, publicité). */
+export const REAL_PARCELS: Parcel[] = [...REAL, ...NOTICES];
+/** Parcelles fictives qui font vivre les espaces de travail (dossiers, litiges, garanties…).
+ * ponytail: fenêtre de publicité relative au jour du build ; fixer DEMO_TODAY si la démo doit être rejouable à date fixe */
+export const DEMO_PARCELS: Parcel[] = generate(140, Date.now());

@@ -23,7 +23,7 @@ bun run build
 
 ## Données
 
-- **Réelles** : 12 couches géographiques fournies au hackathon (PostGIS), 5 parcelles issues des avis de publicité foncière ANDF avec leur vrai polygone (`bun scripts/fetch-real-polygons.ts`), tout autre NUP lu en direct sur l'ANDF si `ANDF_LIVE=true`, imagerie Sentinel-2 GeoMAD (Digital Earth Africa, CC BY 4.0), fond OpenFreeMap, barème des frais et règles d'accès au foncier.
+- **Réelles** : 12 couches géographiques fournies au hackathon (PostGIS), les parcelles des avis de publicité foncière publiés sur andf.bj avec leur vrai polygone (`bun scripts/fetch-publicity.ts`, sans aucun nom de demandeur ; 5 parcelles détaillées via `bun scripts/fetch-real-polygons.ts`), tout autre NUP lu en direct sur l'ANDF si `ANDF_LIVE=true`, imagerie Sentinel-2 GeoMAD (Digital Earth Africa, CC BY 4.0), fond OpenFreeMap, barème des frais et règles d'accès au foncier.
 - **Documents de démonstration** : PDF fictifs au contenu connu (`bun scripts/generate-demo-docs.tsx` → `public/demo-docs/`).
 - **Simulées** : tout le reste, généré de façon déterministe dans `src/lib/data/`. Chaque module expose la même interface que la future source réelle ; le plan de branchement est dans `../DATA_SOURCES.md` § 7.
 - Les raccourcis assumés sont marqués `ponytail:` dans le code (`grep -rn "ponytail:" src`).

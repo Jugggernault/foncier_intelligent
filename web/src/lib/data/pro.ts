@@ -1,12 +1,12 @@
 // Données de l'espace professionnel (notaire, géomètre, huissier, banque).
 // ponytail: dérivées des parcelles et dossiers mock ; E-Notaire et API partenaires à brancher plus tard.
-import { listParcels } from "./parcels";
+import { allParcels } from "./parcels";
 import type { Parcel } from "./types";
 
 const DAY = 86_400_000;
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const NOW = Date.now();
-const titled = listParcels().filter((p) => p.right === "titre" && p.landUse === "urbain");
+const titled = allParcels().filter((p) => p.right === "titre" && p.landUse === "urbain");
 
 export type Mutation = { id: string; nup: string; seller: string; buyer: string; price: number; status: "preparation" | "transmise" | "enregistree"; date: string };
 
@@ -50,7 +50,7 @@ export const DEEDS: Deed[] = titled.slice(15, 22).map((p, i) => ({
 
 export type Collateral = { parcel: Parcel; loan: number; borrower: string; since: string };
 
-export const PORTFOLIO: Collateral[] = [...titled.slice(22, 30), ...listParcels().filter((p) => p.dispute).slice(0, 2)].map((parcel, i) => ({
+export const PORTFOLIO: Collateral[] = [...titled.slice(22, 30), ...allParcels().filter((p) => p.dispute).slice(0, 2)].map((parcel, i) => ({
   parcel,
   loan: Math.round((parcel.pricePerM2.low * parcel.areaM2 * 0.6) / 100_000) * 100_000,
   borrower: NAMES[i % NAMES.length],

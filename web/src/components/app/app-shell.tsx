@@ -1,6 +1,6 @@
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { listParcels } from "@/lib/data/parcels";
+import { allParcels } from "@/lib/data/parcels";
 import type { Persona } from "@/lib/personas";
 import { AppSidebar } from "./app-sidebar";
 import { CommandMenu } from "./command-menu";
@@ -8,7 +8,7 @@ import { UserMenu } from "./user-menu";
 
 /** Coquille commune des espaces connectés : barre latérale, recherche ⌘K, profil. */
 export function AppShell({ persona, children }: { persona: Persona; children: React.ReactNode }) {
-  const parcels = listParcels().map((p) => ({ nup: p.nup, place: `${p.quartier}, ${p.commune}` }));
+  const parcels = allParcels().map((p) => ({ nup: p.nup, place: `${p.quartier}, ${p.commune}` }));
   return (
     <SidebarProvider>
       <AppSidebar persona={persona} />
