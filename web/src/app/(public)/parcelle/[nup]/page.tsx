@@ -19,6 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { climate, type Level } from "@/lib/climate";
 import { cadastreUrl, getParcel, isPublicityOpen, neighbours } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
+import { assessFull } from "@/lib/geo/verdict";
+import { LayerFindings } from "@/components/parcel/layer-findings";
 import { assess } from "@/lib/risk";
 import { cn } from "@/lib/utils";
 
@@ -38,9 +40,10 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
   const p = getParcel(nup);
   if (!p) notFound();
 
-  const result = assess(p);
+  const { result, hits } = await assessFull(p);
   const near = neighbours(p, 2500).slice(0, 12);
   const clim = climate(p);
+  if (hits.some((h) => h.layerId === "zone_inondable")) clim.flood = "élevé";
   const place = [...new Set([p.quartier, p.arrondissement, p.commune])].join(" · ");
   const comparables = near.filter((n) => n.zone === p.zone && n.landUse === p.landUse).slice(0, 4);
   const mid = (p.pricePerM2.low + p.pricePerM2.high) / 2;
@@ -96,6 +99,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
         <div className="lg:col-span-7">
           <ParcelExplorer
             parcel={{ nup: p.nup, polygon: p.polygon, level: result.level }}
+            layers={hits.map((h) => h.layerId)}
             neighbours={near.map((n) => ({ nup: n.nup, polygon: n.polygon, level: assess(n).level }))}
           />
           <p className="mt-2 text-xs text-muted-foreground">
@@ -106,6 +110,14 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
           <Verdict result={result} />
         </div>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-navy">Ce que disent les couches de l&apos;ANDF</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Croisement automatique de l&apos;emprise avec 12 couches : litiges, restrictions (ZDUP, PAG), domaine public, aires protégées, titres, zones inondables.</p>
+        <div className="mt-4 max-w-4xl">
+          <LayerFindings hits={hits} />
+        </div>
+      </section>
 
       <Tabs defaultValue="apercu" className="mt-12">
         <TabsList variant="line" className="w-full justify-start overflow-x-auto border-b">
@@ -220,7 +232,7 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
             <ClimateTile label="Inondation" level={clim.flood} />
             <ClimateTile label="Érosion côtière" level={clim.erosion} />
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">{clim.note} Indicateurs de démonstration ; sources prévues : JRC GloFAS et Digital Earth Africa Coastlines.</p>
+          <p className="mt-4 text-sm text-muted-foreground">{clim.note} Inondation : couche « zone inondable » de l&apos;ANDF ; érosion : indicateur de démonstration (Digital Earth Africa Coastlines prévu).</p>
         </TabsContent>
 
         <TabsContent value="voisinage" className="pt-8">

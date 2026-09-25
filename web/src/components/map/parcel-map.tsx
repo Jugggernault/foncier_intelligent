@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { GeoJSONSource, Map as MlMap, RasterTileSource } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { RiskLevel } from "@/lib/risk";
+import { LAYER_COLOR } from "@/lib/geo/palette";
 import { cn } from "@/lib/utils";
 
 export type MapParcel = { nup: string; polygon: [number, number][]; level?: RiskLevel };
@@ -45,6 +46,24 @@ function toPoints(parcels: MapParcel[]): GeoJSON.FeatureCollection {
   };
 }
 
+/** Ajoute ou retire les couches ANDF (sources MVT servies par /api/layers/{id}/tiles). */
+function syncLayers(m: MlMap, wanted: string[]) {
+  const before = m.getLayer("parcels-fill") ? "parcels-fill" : undefined;
+  for (const id of Object.keys(LAYER_COLOR)) {
+    const src = `andf-${id}`;
+    const on = wanted.includes(id);
+    if (on && !m.getSource(src)) {
+      m.addSource(src, { type: "vector", tiles: [`${location.origin}/api/layers/${id}/tiles/{z}/{x}/{y}`], minzoom: 6, maxzoom: 16 });
+      m.addLayer({ id: `${src}-fill`, type: "fill", source: src, "source-layer": id, paint: { "fill-color": LAYER_COLOR[id], "fill-opacity": 0.22 } }, before);
+      m.addLayer({ id: `${src}-line`, type: "line", source: src, "source-layer": id, paint: { "line-color": LAYER_COLOR[id], "line-width": 1.2 } }, before);
+    } else if (!on && m.getSource(src)) {
+      m.removeLayer(`${src}-line`);
+      m.removeLayer(`${src}-fill`);
+      m.removeSource(src);
+    }
+  }
+}
+
 function bounds(parcels: MapParcel[]): [[number, number], [number, number]] {
   const xs = parcels.flatMap((p) => p.polygon.map((c) => c[0]));
   const ys = parcels.flatMap((p) => p.polygon.map((c) => c[1]));
@@ -64,6 +83,7 @@ export function ParcelMap({
   maxZoom = 16.5,
   className,
   label,
+  layers = [],
 }: {
   parcels: MapParcel[];
   selected?: string;
@@ -74,6 +94,8 @@ export function ParcelMap({
   maxZoom?: number;
   className?: string;
   label: string;
+  /** Couches ANDF (tuiles vectorielles PostGIS) affichées sous les parcelles */
+  layers?: string[];
 }) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<MlMap | null>(null);
@@ -83,6 +105,7 @@ export function ParcelMap({
     parcelsRef.current = parcels;
     selectedRef.current = selected;
   }, [parcels, selected]);
+  const layersRef = useRef(layers);
   const onSelectRef = useRef(onSelect);
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -123,6 +146,7 @@ export function ParcelMap({
       m.on("load", () => {
         // Attribution repliée par défaut (bouton ⓘ) pour ne pas masquer la parcelle
         m.getContainer().querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
+        syncLayers(m, layersRef.current);
         m.addSource("parcels", { type: "geojson", data: toGeoJSON(parcels, selected) });
         m.addLayer({
           id: "parcels-fill",
@@ -182,6 +206,13 @@ export function ParcelMap({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- la carte n'est recréée qu'au changement de fond
   }, [basemap]);
+
+  // Couches ANDF
+  useEffect(() => {
+    layersRef.current = layers;
+    const m = map.current;
+    if (m?.isStyleLoaded()) syncLayers(m, layers);
+  }, [layers]);
 
   // Données
   useEffect(() => {

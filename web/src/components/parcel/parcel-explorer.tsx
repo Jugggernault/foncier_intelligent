@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ParcelMap, type Basemap, type MapParcel } from "@/components/map/parcel-map";
+import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const YEARS = [2016, 2018, 2020, 2022, 2024];
 
 /** Carte de la fiche parcelle : la parcelle, ses voisines, le fond et l'année d'imagerie. */
-export function ParcelExplorer({ parcel, neighbours }: { parcel: MapParcel; neighbours: MapParcel[] }) {
+export function ParcelExplorer({ parcel, neighbours, layers = [] }: { parcel: MapParcel; neighbours: MapParcel[]; layers?: string[] }) {
   const router = useRouter();
   const [year, setYear] = useState(2024);
   const [basemap, setBasemap] = useState<Basemap>("satellite");
+  const [showLayers, setShowLayers] = useState(true);
 
   return (
     <div className="overflow-hidden rounded-lg border bg-card">
@@ -21,6 +23,7 @@ export function ParcelExplorer({ parcel, neighbours }: { parcel: MapParcel; neig
           selected={parcel.nup}
           basemap={basemap}
           year={year}
+          layers={showLayers ? layers : []}
           padding={120}
           label={`Carte de la parcelle ${parcel.nup}`}
           onSelect={(nup) => nup !== parcel.nup && router.push(`/parcelle/${nup}`)}
@@ -42,6 +45,12 @@ export function ParcelExplorer({ parcel, neighbours }: { parcel: MapParcel; neig
             Plan
           </ToggleGroupItem>
         </ToggleGroup>
+        {layers.length > 0 && (
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={showLayers} onCheckedChange={setShowLayers} />
+            Couches ANDF
+          </label>
+        )}
         {basemap === "satellite" && (
           <ToggleGroup
             value={[String(year)]}
