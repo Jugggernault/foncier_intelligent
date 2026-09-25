@@ -9,6 +9,8 @@ import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { LAYER_COLOR } from "@/lib/geo/palette";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { RiskLevel } from "@/lib/risk";
@@ -30,7 +32,8 @@ export type ExplorerParcel = {
 
 const LEVELS: RiskLevel[] = ["danger", "caution", "clear"];
 
-export function MapExplorer({ parcels }: { parcels: ExplorerParcel[] }) {
+export function MapExplorer({ parcels, layers = [] }: { parcels: ExplorerParcel[]; layers?: { id: string; label: string; severity: string }[] }) {
+  const [shown, setShown] = useState<string[]>(["litige", "restriction", "tf_etat", "aire_protegee", "dpm", "dpl"]);
   const [levels, setLevels] = useState<string[]>(LEVELS);
   const [commune, setCommune] = useState("toutes");
   const [onlyAlerts, setOnlyAlerts] = useState(false);
@@ -99,6 +102,24 @@ export function MapExplorer({ parcels }: { parcels: ExplorerParcel[] }) {
             </div>
           </div>
         </div>
+        {layers.length > 0 && (
+          <details className="border-b px-4 py-3" open>
+            <summary className="cursor-pointer text-sm font-semibold">Couches de l&apos;ANDF</summary>
+            <ul className="mt-3 space-y-2">
+              {layers.map((l) => (
+                <li key={l.id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    id={`layer-${l.id}`}
+                    checked={shown.includes(l.id)}
+                    onCheckedChange={(v) => setShown(v ? [...shown, l.id] : shown.filter((x) => x !== l.id))}
+                  />
+                  <span className="size-3 rounded-sm" style={{ backgroundColor: LAYER_COLOR[l.id] }} aria-hidden="true" />
+                  <Label htmlFor={`layer-${l.id}`} className="font-normal">{l.label}</Label>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
         <ScrollArea className="min-h-0 flex-1">
           <ItemGroup className="gap-1 p-2">
             {visible.map((p) => {
@@ -131,6 +152,7 @@ export function MapExplorer({ parcels }: { parcels: ExplorerParcel[] }) {
           basemap={basemap}
           padding={70}
           label="Carte des parcelles"
+          layers={shown}
           onSelect={setSelected}
         />
         <ToggleGroup

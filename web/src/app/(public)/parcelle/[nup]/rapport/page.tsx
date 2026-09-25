@@ -6,7 +6,8 @@ import { Verdict } from "@/components/parcel/verdict";
 import { climate } from "@/lib/climate";
 import { getParcel } from "@/lib/data/parcels";
 import { alertLabel, disputeLabel, fmtArea, fmtDate, fmtFcfa, ownerLabel, procedureLabel, rightLabel } from "@/lib/labels";
-import { assess } from "@/lib/risk";
+import { assessFull } from "@/lib/geo/verdict";
+import { LayerFindings } from "@/components/parcel/layer-findings";
 
 export async function generateMetadata({ params }: PageProps<"/parcelle/[nup]/rapport">): Promise<Metadata> {
   return { title: `Rapport de vérification ${(await params).nup} · Foncier Intelligent` };
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/parcelle/[nup]/ra
 export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/rapport">) {
   const p = getParcel((await params).nup);
   if (!p) notFound();
-  const result = assess(p);
+  const { result, hits } = await assessFull(p);
   const clim = climate(p);
   const now = new Date();
   const ref = `FI-${p.nup}-${now.toISOString().slice(0, 10).replaceAll("-", "")}`;
@@ -57,8 +58,11 @@ export default async function ReportPage({ params }: PageProps<"/parcelle/[nup]/
         <Verdict result={result} className="mt-6 print:[print-color-adjust:exact]" />
 
         <div className="mt-6 aspect-[16/9] overflow-hidden rounded-lg border print:hidden">
-          <ParcelMap parcels={[{ nup: p.nup, polygon: p.polygon, level: result.level }]} selected={p.nup} padding={90} label={`Image satellite de la parcelle ${p.nup}`} />
+          <ParcelMap parcels={[{ nup: p.nup, polygon: p.polygon, level: result.level }]} layers={hits.map((h) => h.layerId)} selected={p.nup} padding={90} label={`Image satellite de la parcelle ${p.nup}`} />
         </div>
+
+        <h2 className="mt-8 text-base font-bold text-navy">Couches géographiques de l&apos;ANDF</h2>
+        <div className="mt-3"><LayerFindings hits={hits} /></div>
 
         <table className="mt-8 w-full text-sm">
           <tbody className="divide-y">

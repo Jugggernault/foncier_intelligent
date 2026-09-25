@@ -18,7 +18,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { fr } from "@/i18n/fr";
 import { NUP_PATTERN, cadastreUrl, getImagery, getParcel, type Parcel } from "@/lib/data/parcels";
-import { assess, type RiskLevel } from "@/lib/risk";
+import { assess, type Assessment, type RiskLevel } from "@/lib/risk";
 import { ParcelMap } from "@/components/map/parcel-map";
 import { procedureLabel, rightLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
@@ -164,7 +164,19 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const imagery = getImagery(parcel.nup);
   const years = imagery?.years ?? [2016, 2018, 2020, 2022, 2024];
   const [year, setYear] = useState(years.at(-1)!);
-  const result = assess(parcel);
+  // Verdict immédiat sur les données locales, puis enrichi par les couches ANDF (PostGIS) via l'API.
+  const [full, setFull] = useState<{ result: Assessment; layers: string[] }>();
+  useEffect(() => {
+    let alive = true;
+    fetch(`/api/parcels/${parcel.nup}`)
+      .then((r) => (r.ok ? r.json() : undefined))
+      .then((d) => alive && d && setFull({ result: d.risk, layers: (d.layers ?? []).map((h: { layerId: string }) => h.layerId) }))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [parcel.nup]);
+  const result = full?.result ?? assess(parcel);
   const style = LEVEL_STYLE[result.level];
   const Icon = style.icon;
   const place = [...new Set([parcel.quartier, parcel.arrondissement, parcel.commune])].join(" · ");
@@ -208,6 +220,7 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
           ) : (
             <ParcelMap
               parcels={[{ nup: parcel.nup, polygon: parcel.polygon, level: result.level }]}
+              layers={full?.layers ?? []}
               selected={parcel.nup}
               year={year}
               padding={80}
