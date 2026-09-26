@@ -7,7 +7,7 @@ Message à faire passer : *le site de l'ANDF dit ce qui est enregistré ; Foncie
 ## Avant de monter sur scène (J-1 et H-30 min)
 
 - [ ] Ouvrir le site une première fois : Supabase (offre gratuite) se met en pause après 7 jours sans activité. Dans ce cas, le réveiller depuis le tableau de bord Supabase.
-- [ ] Charger à l'avance, dans des onglets : `/`, `/carte`, `/impact`, `/publicite/101525236`, `/assistant`, `/parcelle/101236198/rapport`. La première ouverture de la carte à l'échelle du pays est lente (tuiles des couches).
+- [ ] Charger à l'avance, dans des onglets : `/`, `/carte`, `/impact`, `/publicite/101525236`, `/assistant`, `/parcelle/101236198/rapport`, `/agent/alertes/SAT-1`. La première ouverture de la carte à l'échelle du pays est lente (tuiles des couches).
 - [ ] Se connecter une fois comme géomètre puis comme agente (menu « Mon espace » → « Entrer en démonstration »), pour que le changement de profil soit instantané.
 - [ ] Télécharger en local `leve-calavi-tankpe.pdf` et `leve-calavi-calage.pdf` depuis `/demo-docs/`.
 - [ ] Vérifier qu'Ilèmi répond (`/assistant` → « Vérifie la parcelle 101236198 »). Si OpenRouter est en panne, retirer `OPENROUTER_API_KEY` sur Vercel et redéployer : le modèle scripté prend le relais avec les mêmes écrans.
@@ -27,7 +27,8 @@ Message à faire passer : *le site de l'ANDF dit ce qui est enregistré ; Foncie
 1. Accueil → taper **101236198** → Vérifier.
 2. Montrer : le **vrai polygone** de l'ANDF sur l'image satellite, la frise 2017 → 2025 (l'aménagement littoral apparaît en 2023), le verdict rouge **« Terrain de l'État : il ne peut pas vous être vendu »**.
 3. « Pourquoi ce verdict ? » : zone réservée (Périmètre de la Route des Pêches) à 93 %, domaine public maritime à 20 %. *Ces couches sont celles de l'ANDF.*
-4. Pas de NUP ? Lien « Vérifiez avec le levé du vendeur » → `/leve` → déposer `leve-calavi-tankpe.pdf` : bornes lues, placées sur la carte, **zone en litige**.
+4. Bouton **« Visiter le terrain »** : la photo de rue de 2016 sur la route des Pêches, puis « Marcher dans la rue » (Mapillary). Comparer avec l'image satellite 2025 : le terrain a changé.
+5. Pas de NUP ? Lien « Vérifiez avec le levé du vendeur » → `/leve` → déposer `leve-calavi-tankpe.pdf` : bornes lues, placées sur la carte, **zone en litige**.
 
 > « Trente secondes, sans rien connaître au foncier. »
 
@@ -53,6 +54,7 @@ Message à faire passer : *le site de l'ANDF dit ce qui est enregistré ; Foncie
 1. `/publicite` → « Signalés par le contrôle automatique : 12 sur 143 ».
 2. Ouvrir **101525236** : demande de confirmation **située à 100 % dans la zone de l'aéroport de Glo-Djigbé**.
 3. Dans l'espace agente, « Publicité foncière » : mêmes signalements, classés en tête.
+4. Espace agente, « Empiètements » → **SAT-1, forêt classée de Sèmè** : 13 ha défrichés entre 2023 et 2025, images avant/après et courbe de végétation, calculées sur Sentinel-2. « Créer une mission terrain ».
 
 > « Aujourd'hui, personne ne croise systématiquement les avis avec les couches. Nous le faisons pour chaque avis publié. »
 
