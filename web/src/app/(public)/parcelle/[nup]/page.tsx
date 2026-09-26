@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { TerrainVisit } from "@/components/parcel/terrain-visit";
+import { STREET_VIEWS } from "@/content/street-views";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellPlusIcon, ExternalLinkIcon, FileDownIcon } from "lucide-react";
@@ -106,8 +108,9 @@ export default async function ParcelPage({ params }: PageProps<"/parcelle/[nup]"
             Emprise {p.real ? "publiée par l'ANDF (cadastre numérique)" : "de démonstration"}. Cliquez une parcelle voisine pour l&apos;ouvrir.
           </p>
         </div>
-        <div className="lg:col-span-5">
+        <div className="space-y-6 lg:col-span-5">
           <Verdict result={result} />
+          <TerrainVisit nup={p.nup} view={STREET_VIEWS[p.nup]} center={p.center} />
         </div>
       </div>
 

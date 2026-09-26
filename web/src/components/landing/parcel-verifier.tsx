@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  FootprintsIcon,
   SparklesIcon,
   ArrowRightIcon,
   ExternalLinkIcon,
@@ -17,6 +18,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { STREET_VIEWS } from "@/content/street-views";
 import { fr } from "@/i18n/fr";
 import { NUP_PATTERN, cadastreUrl, getImagery, getParcel, type Parcel } from "@/lib/data/parcels";
 import { assess, type Assessment, type RiskLevel } from "@/lib/risk";
@@ -320,6 +322,11 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
           {v.open}
           <ArrowRightIcon data-icon="inline-end" />
         </Link>
+        {STREET_VIEWS[parcel.nup] && (
+          <Link href={`/parcelle/${parcel.nup}#visite`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}>
+            <FootprintsIcon className="size-4" /> Visiter le terrain
+          </Link>
+        )}
         <p className="w-full text-[0.7rem] leading-snug text-muted-foreground">{v.source}</p>
       </footer>
     </article>
