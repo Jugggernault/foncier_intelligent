@@ -6,8 +6,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 const config = { ndvi: { label: "NDVI", color: "var(--chart-4)" } } satisfies ChartConfig;
 const YEARS = [2020, 2021, 2022, 2023, 2024];
 
-export function NdviChart({ values, expected }: { values: number[]; expected: number }) {
-  const data = values.map((v, i) => ({ year: String(YEARS[i]), ndvi: v }));
+export function NdviChart({ values, expected, years = YEARS }: { values: number[]; expected: number; years?: number[] }) {
+  const data = values.map((v, i) => ({ year: String(years[i]), ndvi: v }));
   return (
     <ChartContainer config={config} className="mt-4 aspect-[16/9] w-full">
       <LineChart data={data} margin={{ left: 0, right: 12, top: 12 }}>

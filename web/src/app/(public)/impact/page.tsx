@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { listPublicityNotices } from "@/lib/data/parcels";
 import { DETECTABLE, impactStats } from "@/lib/geo/impact";
 import { noticeChecks } from "@/lib/geo/notice-check";
+import { SATELLITE_ALERTS } from "@/lib/data/satellite-alerts";
 import { titleCase as title } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
@@ -126,6 +127,15 @@ export default async function ImpactPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="max-w-3xl">
+          <h2 className="text-2xl font-bold text-navy">Les forêts classées, surveillées par satellite</h2>
+          <p className="mt-3 leading-relaxed text-muted-foreground">
+            Premier passage sur le Grand Nokoué avec les images Sentinel-2 de 2017 à 2025 : {SATELLITE_ALERTS.length} défrichements d&apos;un seul tenant dans des forêts classées,{" "}
+            {n(Math.round(SATELLITE_ALERTS.reduce((s, a) => s + a.areaM2, 0) / 10_000))} ha au total, tous apparus entre 2023 et 2025 ({SATELLITE_ALERTS.map((a) => a.zone.replace("Forêt Classée de ", "")).join(", ")}).
+            Chaque alerte part à l&apos;agent de l&apos;ANDF avec les images avant/après, pour vérification sur le terrain.
+          </p>
         </section>
 
         <p className="border-t pt-6 text-xs text-muted-foreground">
