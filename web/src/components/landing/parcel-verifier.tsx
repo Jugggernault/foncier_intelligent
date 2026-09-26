@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  FootprintsIcon,
-  SparklesIcon,
   ArrowRightIcon,
   ExternalLinkIcon,
   SearchIcon,
@@ -13,21 +11,17 @@ import {
   ShieldQuestionIcon,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { STREET_VIEWS } from "@/content/street-views";
 import { fr } from "@/i18n/fr";
 import { NUP_PATTERN, cadastreUrl, getImagery, getParcel, type Parcel } from "@/lib/data/parcels";
 import { assess, type Assessment, type RiskLevel } from "@/lib/risk";
 import { ParcelMap } from "@/components/map/parcel-map";
-import { procedureLabel, rightLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 export const VERIFY_EVENT = "fi:verify-nup";
-const SAMPLES = ["101236198", "101232574", "101236307", "100666667"];
+const SAMPLES = ["101236198", "101232574", "101236307"];
 const t = fr.hero;
 const v = fr.verdict;
 
@@ -36,13 +30,6 @@ const LEVEL_STYLE: Record<RiskLevel, { band: string; icon: typeof ShieldAlertIco
   caution: { band: "bg-caution-soft text-caution", icon: ShieldQuestionIcon },
   clear: { band: "bg-clear-soft text-clear", icon: ShieldCheckIcon },
 };
-
-const fmtDate = (iso: string) =>
-  new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));
-const fmtArea = (m2: number) =>
-  m2 >= 10_000
-    ? `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(m2 / 10_000)} ha`
-    : `${new Intl.NumberFormat("fr-FR").format(m2)} m²`;
 
 export function ParcelVerifier() {
   const [active, setActive] = useState<string>(SAMPLES[0]);
@@ -77,15 +64,13 @@ export function ParcelVerifier() {
   });
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-4 pt-8 pb-16 sm:px-6 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-8 lg:px-8 lg:pt-16 lg:pb-24">
-      <div className="lg:col-span-6 lg:self-end xl:col-span-5">
-        <h1 className="text-[clamp(2.6rem,6.2vw,4.75rem)] leading-[0.98] font-extrabold text-white">
-          {t.title}
-        </h1>
-        <p className="mt-4 max-w-[34rem] text-base leading-relaxed text-white/80 sm:mt-6 sm:text-lg">{t.lead}</p>
+    <div className="mx-auto grid max-w-7xl gap-10 px-4 pt-8 pb-16 sm:px-6 lg:grid-cols-12 lg:items-center lg:gap-x-16 lg:px-8 lg:pt-12 lg:pb-20">
+      <div className="min-w-0 lg:col-span-6">
+        <h1 className="text-[clamp(2.6rem,5.6vw,4.5rem)] leading-[0.98] font-extrabold text-balance text-white">{t.title}</h1>
+        <p className="mt-5 max-w-[34rem] text-base leading-relaxed text-white/80 sm:mt-6 sm:text-lg">{t.lead}</p>
 
         <form
-          className="mt-6 max-w-xl sm:mt-10"
+          className="mt-8 sm:mt-10"
           onSubmit={(e) => {
             e.preventDefault();
             show(query.trim());
@@ -93,7 +78,7 @@ export function ParcelVerifier() {
           noValidate
         >
           <Field data-invalid={!!error || undefined}>
-            <FieldLabel htmlFor="nup" className="text-sm font-medium text-white/75">
+            <FieldLabel htmlFor="nup" className="sr-only">
               {t.label}
             </FieldLabel>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -124,35 +109,13 @@ export function ParcelVerifier() {
                 {error}
               </FieldError>
             )}
-            <Link href="/leve" className="mt-1 w-fit text-sm font-medium text-white/80 underline underline-offset-4 hover:text-white">
-              {t.noNup} →
-            </Link>
           </Field>
         </form>
 
-        {/* Troisième geste : une question libre, confiée à l'agent Ilèmi */}
-        <form action="/assistant" className="mt-5 max-w-xl">
-          <label htmlFor="ask" className="text-sm font-medium text-white/75">{t.ask}</label>
-          <InputGroup className="mt-2 h-11 rounded-md border-white/20 bg-white/5 text-white has-[[data-slot=input-group-control]:focus-visible]:ring-signal/60">
-            <InputGroupAddon className="pl-3">
-              <SparklesIcon className="size-4 text-signal" />
-            </InputGroupAddon>
-            <InputGroupInput id="ask" name="q" required autoComplete="off" placeholder={t.askPlaceholder} className="placeholder:text-white/50" />
-            <InputGroupAddon align="inline-end">
-              <Button type="submit" size="icon-sm" variant="ghost" aria-label="Demander à Ilèmi" className="text-white hover:bg-white/10 hover:text-white">
-                <ArrowRightIcon />
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-        </form>
-      </div>
-
-      <div className="-mx-4 -mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mt-0 sm:block sm:overflow-visible sm:px-0 lg:col-span-6 lg:row-start-2 lg:self-start xl:col-span-5">
-          <p className="shrink-0 text-sm text-white/65">
-            <span className="sm:hidden">Essayez :</span>
-            <span className="hidden sm:inline">{t.tryLabel}</span>
-          </p>
-          <ul className="flex gap-2 sm:mt-3 sm:flex-wrap">
+        {/* Les parcelles d'essai prolongent le champ : un clic remplit le NUP et met la fiche à jour. */}
+        <div className="-mx-4 mt-4 flex items-center gap-3 overflow-x-auto [scrollbar-width:none] px-4 pb-1 sm:mx-0 sm:px-0">
+          <p className="shrink-0 text-sm text-white/65">{t.tryLabel}</p>
+          <ul className="flex gap-2">
             {SAMPLES.map((nup) => {
               const p = getParcel(nup)!;
               const on = nup === active && !missing;
@@ -165,21 +128,30 @@ export function ParcelVerifier() {
                       show(nup);
                     }}
                     aria-pressed={on}
+                    title={p.arrondissement ?? "Sans localisation"}
                     className={cn(
-                      "rounded-md border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-3 focus-visible:ring-signal/60 focus-visible:outline-none",
-                      on ? "border-white bg-white/10 text-white" : "border-white/20 text-white/80 hover:border-white/50 hover:text-white"
+                      "tabular rounded-sm border px-2.5 py-1.5 font-display text-sm font-bold tracking-[0.04em] transition-colors focus-visible:ring-3 focus-visible:ring-signal/60 focus-visible:outline-none",
+                      on ? "border-white bg-white/10 text-white" : "border-white/20 text-white/75 hover:border-white/50 hover:text-white"
                     )}
                   >
-                    <span className="tabular block font-display font-bold tracking-[0.04em]">{nup}</span>
-                    <span className="block text-xs text-white/60">{p.arrondissement ?? "Sans localisation"}</span>
+                    {nup}
                   </button>
                 </li>
               );
             })}
           </ul>
+        </div>
+
+        <Link
+          href="/leve"
+          className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-white/75 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+        >
+          {t.noNup}
+          <ArrowRightIcon className="size-3.5" aria-hidden="true" />
+        </Link>
       </div>
 
-      <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:self-center">
+      <div className="min-w-0 lg:col-span-6">
         {missing ? <MissingPanel nup={missing} /> : <VerdictPanel key={active} parcel={lookup(active)!} />}
       </div>
     </div>
@@ -188,8 +160,7 @@ export function ParcelVerifier() {
 
 function VerdictPanel({ parcel }: { parcel: Parcel }) {
   const imagery = getImagery(parcel.nup);
-  const years = imagery?.years ?? [2017, 2019, 2021, 2023, 2025];
-  const [year, setYear] = useState(years.at(-1)!);
+  const year = imagery?.years.at(-1) ?? 2025;
   // Verdict immédiat sur les données locales, puis enrichi par les couches ANDF (PostGIS) via l'API.
   const [full, setFull] = useState<{ result: Assessment; layers: string[] }>();
   useEffect(() => {
@@ -218,84 +189,13 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
     : "";
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg bg-card text-card-foreground shadow-[0_24px_60px_-20px_rgba(2,12,27,0.65)]">
-      <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-5 pb-4 sm:px-6">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">NUP</p>
-          <p className="tabular font-display text-2xl font-extrabold tracking-[0.04em] text-navy">{parcel.nup}</p>
-          <p className="mt-0.5 text-sm text-muted-foreground">{place || "Commune non précisée"}</p>
-        </div>
-        <Badge variant="secondary" className="rounded-sm">{parcel.live ? "ANDF, consulté en direct" : v.sample}</Badge>
+    <article className="overflow-hidden rounded-lg bg-card text-card-foreground shadow-[0_24px_60px_-20px_rgba(2,12,27,0.65)]">
+      <header className="px-5 pt-5 pb-4 sm:px-6">
+        <p className="tabular font-display text-2xl font-extrabold tracking-[0.04em] text-navy">{parcel.nup}</p>
+        <p className="mt-0.5 text-sm text-muted-foreground">{place || "Commune non précisée"}</p>
       </header>
 
-      <figure className="relative max-lg:order-2">
-        <div className="relative aspect-[16/10] overflow-hidden bg-navy-ink">
-          {imagery ? (
-            <svg
-              key={year}
-              viewBox="96 204 576 360"
-              preserveAspectRatio="xMidYMid slice"
-              className="absolute inset-0 size-full animate-[develop_700ms_cubic-bezier(0.16,1,0.3,1)_both]"
-              role="img"
-              aria-label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
-            >
-              <image href={`/imagery/${parcel.nup}/${year}.jpg`} width="768" height="768" />
-              <polygon
-                points={outline}
-                fill="rgba(255,212,0,0.12)"
-                stroke="var(--signal)"
-                strokeWidth="3"
-              />
-            </svg>
-          ) : (
-            <ParcelMap
-              parcels={[{ nup: parcel.nup, polygon: parcel.polygon, level: result.level }]}
-              layers={full?.layers ?? []}
-              selected={parcel.nup}
-              year={year}
-              padding={80}
-              label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
-            />
-          )}
-            <div
-              key={`scan-${parcel.nup}`}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-[9%] animate-[scan_1.1s_cubic-bezier(0.22,1,0.36,1)_both] bg-gradient-to-b from-transparent via-signal/30 to-signal/70 [box-shadow:0_2px_0_var(--signal)]"
-            />
-            <span className="tabular absolute top-3 left-3 rounded-sm bg-navy-deep/80 px-2 py-1 font-display text-sm font-bold text-white">
-              {year}
-            </span>
-          </div>
-          <figcaption className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3 sm:px-6">
-            <span className="max-w-[18rem] text-xs text-muted-foreground">{imagery ? v.footprint : v.footprintLive}</span>
-            <ToggleGroup
-              value={[String(year)]}
-              onValueChange={(val) => val[0] && setYear(Number(val[0]))}
-              size="sm"
-              spacing={0}
-              variant="outline"
-              aria-label="Année de l'image"
-            >
-              {years.map((y) => (
-                <ToggleGroupItem key={y} value={String(y)} className="tabular px-2.5 data-pressed:bg-navy data-pressed:text-white">
-                  {y}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </figcaption>
-      </figure>
-
-      <dl className="grid grid-cols-2 max-lg:order-3 gap-x-6 gap-y-3 px-5 py-4 text-sm sm:px-6">
-        <Fact label={v.facts.owner} value={parcel.owner.kind === "state" ? v.ownerState : v.ownerPrivate} />
-        <Fact label={v.facts.area} value={parcel.areaM2 ? fmtArea(parcel.areaM2) : "—"} />
-        <Fact label={v.facts.procedure} value={parcel.procedure ? procedureLabel(parcel.procedure) : rightLabel(parcel)} />
-        <Fact
-          label={v.facts.publicity}
-          value={parcel.procedure ? `${fmtDate(parcel.procedure.publicity.start)} → ${fmtDate(parcel.procedure.publicity.end)}` : v.noPublicity}
-        />
-      </dl>
-
-      <div className={cn("px-5 sm:px-6 max-lg:order-1", style.band)}>
+      <div className={cn("px-5 sm:px-6", style.band)}>
         <div className="flex items-start gap-3 pt-4">
           <Icon className="mt-0.5 size-6 shrink-0" />
           <p className="font-display text-lg leading-snug font-extrabold">{result.headline}</p>
@@ -317,17 +217,43 @@ function VerdictPanel({ parcel }: { parcel: Parcel }) {
         </Accordion>
       </div>
 
-      <footer className="flex flex-wrap max-lg:order-4 items-center justify-between gap-3 px-5 py-4 sm:px-6">
+      <div className="relative aspect-[16/10] overflow-hidden bg-navy-ink">
+        {imagery ? (
+          <svg
+            viewBox="96 204 576 360"
+            preserveAspectRatio="xMidYMid slice"
+            className="absolute inset-0 size-full animate-[develop_700ms_cubic-bezier(0.16,1,0.3,1)_both]"
+            role="img"
+            aria-label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
+          >
+            <image href={`/imagery/${parcel.nup}/${year}.jpg`} width="768" height="768" />
+            <polygon points={outline} fill="rgba(255,212,0,0.12)" stroke="var(--signal)" strokeWidth="3" />
+          </svg>
+        ) : (
+          <ParcelMap
+            parcels={[{ nup: parcel.nup, polygon: parcel.polygon, level: result.level }]}
+            layers={full?.layers ?? []}
+            selected={parcel.nup}
+            year={year}
+            padding={80}
+            label={`Image satellite ${year} de la parcelle ${parcel.nup}`}
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[9%] animate-[scan_1.1s_cubic-bezier(0.22,1,0.36,1)_both] bg-gradient-to-b from-transparent via-signal/30 to-signal/70 [box-shadow:0_2px_0_var(--signal)]"
+        />
+        <span className="tabular absolute top-3 left-3 rounded-sm bg-navy-deep/80 px-2 py-1 font-display text-sm font-bold text-white">
+          {year}
+        </span>
+      </div>
+
+      <footer className="px-5 py-4 sm:px-6">
         <Link href={`/parcelle/${parcel.nup}`} className={cn(buttonVariants({ variant: "link" }), "h-auto px-0 font-semibold text-navy")}>
           {v.open}
           <ArrowRightIcon data-icon="inline-end" />
         </Link>
-        {STREET_VIEWS[parcel.nup] && (
-          <Link href={`/parcelle/${parcel.nup}#visite`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}>
-            <FootprintsIcon className="size-4" /> Visiter le terrain
-          </Link>
-        )}
-        <p className="w-full text-[0.7rem] leading-snug text-muted-foreground">{v.source}</p>
+        <p className="mt-2 text-[0.7rem] leading-snug text-muted-foreground">{v.source}</p>
       </footer>
     </article>
   );
@@ -348,15 +274,6 @@ function MissingPanel({ nup }: { nup: string }) {
         <ExternalLinkIcon data-icon="inline-end" />
       </a>
     </article>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="tabular mt-0.5 font-medium">{value}</dd>
-    </div>
   );
 }
 

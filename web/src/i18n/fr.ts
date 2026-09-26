@@ -14,50 +14,55 @@ export const fr = {
 
   hero: {
     title: "Avant de payer un terrain, vérifiez-le.",
-    lead: "Saisissez le numéro unique de parcelle (NUP) inscrit sur les documents du vendeur. Statut juridique, image satellite et risques, en 30 secondes.",
+    lead: "Entrez le numéro unique de parcelle (NUP) que vous donne le vendeur. Statut juridique, image satellite et risques, en 30\u00a0secondes.",
     label: "Numéro unique de parcelle",
     placeholder: "Ex. 101236198",
     submit: "Vérifier",
-    tryLabel: "Essayez avec une parcelle réelle :",
-    noNup: "Pas de NUP ? Vérifiez avec le levé du vendeur",
-    ask: "Une autre question ? Ilèmi, l'agent foncier, s'en charge",
-    askPlaceholder: "Ex. Combien coûte la mutation d'un terrain de 12 millions ?",
+    tryLabel: "Essayez\u00a0:",
+    noNup: "Pas de NUP\u00a0? Vérifiez avec le levé",
     invalid: "Un NUP compte 9 chiffres.",
     notFound: "Cette parcelle n'est pas encore dans la démonstration.",
     notFoundAction: "Consulter la fiche sur le cadastre ANDF",
   },
 
   verdict: {
-    sample: "Parcelle publiée par l'ANDF",
-    footprint: "Emprise publiée par l'ANDF (cadastre numérique)",
-    footprintLive: "Emprise de démonstration sur imagerie Sentinel-2",
-    noPublicity: "Aucune en cours",
     why: "Pourquoi ce verdict ?",
-    facts: { area: "Superficie", owner: "Propriétaire", procedure: "Procédure", publicity: "Publicité" },
-    ownerState: "État béninois",
-    ownerPrivate: "Particulier (identité masquée)",
     open: "Voir la fiche complète",
     source: "Sources : avis de publicité foncière ANDF · Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées",
   },
 
-  timeline: {
-    title: "Le terrain ne ment pas.",
-    lead: "Un vendeur peut produire un faux papier, pas une fausse image satellite. Chaque fiche montre l'évolution réelle du terrain depuis 2017. Ici, la côte de Togbin : l'aménagement littoral apparaît en 2023.",
-    caption: "Togbin-Daho, Godomey · NUP 101236198 · Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées, 10 m par pixel",
+  how: {
+    title: "Trois gestes, trente secondes.",
+    lead: "Du numéro inscrit sur le papier du vendeur à un verdict que vous pouvez comprendre.",
+    steps: [
+      { title: "Relevez le NUP", text: "Le numéro unique de parcelle compte 9 chiffres. Il figure sur l'attestation, le certificat ou le titre que vous montre le vendeur." },
+      { title: "Regardez le terrain", text: "Un vendeur peut produire un faux papier, pas une fausse image satellite. Faites glisser\u00a0: la côte de Togbin, de 2017 à 2025." },
+      { title: "Lisez le verdict", text: "Pas de note mystérieuse\u00a0: chaque signal est expliqué, avec ses sources et ce qu'il faut faire pour lever le doute." },
+    ],
+    docLabel: "Numéro unique de parcelle",
+    docHint: "Sur les documents du vendeur",
+    tryCta: "Vérifier cette parcelle",
+    slider: "Année de l'image satellite",
+    caption: "Togbin-Daho, Godomey · NUP 101236198 · Sentinel-2 GeoMAD annuel © Digital Earth Africa (CC BY 4.0), données Copernicus modifiées",
+    levels: [
+      { level: "danger", title: "Rouge\u00a0: n'achetez pas", text: "Terrain de l'État, litige déclaré, ou vendeur qui n'est pas le titulaire." },
+      { level: "caution", title: "Orange\u00a0: vérifiez avant de payer", text: "Propriété pas encore confirmée ou information manquante." },
+      { level: "clear", title: "Vert\u00a0: aucun signal connu", text: "Titre foncier au nom du vendeur, aucun litige ni alerte connus." },
+    ],
   },
 
-  reading: {
-    title: "Un verdict que vous pouvez comprendre.",
-    lead: "Pas de note mystérieuse : chaque signal est expliqué, avec ce qu'il faut faire pour lever le doute.",
-    steps: [
-      { title: "Confirmation des droits", text: "Le demandeur dépose ses pièces à l'ANDF." },
-      { title: "Publicité foncière", text: "15 jours pendant lesquels chacun peut s'opposer." },
-      { title: "Titre foncier", text: "Le seul acte de propriété définitif (Code foncier, 2013)." },
-    ],
-    levels: [
-      { level: "danger", title: "Rouge", text: "N'achetez pas. Terrain de l'État, litige déclaré, ou vendeur qui n'est pas le titulaire." },
-      { level: "caution", title: "Orange", text: "Propriété pas encore confirmée ou information manquante : vérifiez avant de payer." },
-      { level: "clear", title: "Vert", text: "Titre foncier au nom du vendeur, aucun litige ni alerte connus." },
+  tools: {
+    title: "Avant, pendant et après l'achat.",
+    lead: "Chaque outil part de la parcelle et renvoie vers elle.",
+    items: [
+      { href: "/recherche", icon: "search", title: "Vérifier une parcelle", text: "Statut juridique, image satellite et risques, à partir du NUP." },
+      { href: "/leve", icon: "ruler", title: "Pas de NUP\u00a0? Le levé", text: "Vérifiez avec le plan du géomètre que vous remet le vendeur." },
+      { href: "/carte", icon: "map", title: "La carte", text: "Les parcelles publiées, vues du ciel, année par année." },
+      { href: "/publicite", icon: "bell", title: "Publicité foncière", text: "Les demandes de titre en cours, et 15\u00a0jours pour s'opposer." },
+      { href: "/assistant", icon: "message", title: "Ilèmi, l'agent foncier", text: "Vos questions, répondues avec la source juridique." },
+      { href: "/outils/frais", icon: "calculator", title: "Calcul des frais", text: "Les frais de mutation ANDF, selon le barème officiel." },
+      { href: "/outils/eligibilite", icon: "user", title: "Qui peut acheter\u00a0?", text: "Nationalité, ville ou campagne\u00a0: ce que dit le Code foncier." },
+      { href: "/guides", icon: "file", title: "Les démarches", text: "Délais, coûts et qui peut les faire, sans détour." },
     ],
   },
 
@@ -72,21 +77,6 @@ export const fr = {
     soon: "Bientôt",
     all: "Tous les avis",
     unknownPlace: "Localisation non publiée",
-  },
-
-  assistant: {
-    title: "Une question ? Demandez simplement.",
-    lead: "L'assistant répond à partir du Code foncier et domanial, des décrets et des démarches de l'ANDF. Chaque réponse cite sa source. Pour un conseil qui vous engage, il vous oriente vers un notaire.",
-    cta: "Poser une question",
-    sampleLabel: "Exemple de réponse",
-    question: "Je suis Togolais. Puis-je acheter un terrain à Cotonou ?",
-    answer: [
-      "En ville, oui, si votre pays applique la réciprocité avec le Bénin : un Béninois doit pouvoir acheter chez vous dans les mêmes conditions.",
-      "À la campagne, non : les terres rurales sont réservées aux personnes de nationalité béninoise.",
-      "Autre option : un bail de 50 ans maximum, non renouvelable.",
-    ],
-    sourceLabel: "Source",
-    source: "Code foncier et domanial · conditions d'accès au foncier (ANDF)",
   },
 
   fees: {
@@ -127,7 +117,7 @@ export const fr = {
     columns: [
       { title: "Vérifier", links: [["Rechercher une parcelle", "/recherche"], ["Carte", "/carte"], ["Publicité foncière", "/publicite"], ["Vérifier un rapport", "/verifier"]] },
       { title: "Comprendre", links: [["Démarches", "/guides"], ["Calcul des frais", "/outils/frais"], ["Qui peut acheter ?", "/outils/eligibilite"]] },
-      { title: "Le projet", links: [["À propos", "/a-propos"], ["Impact", "/impact"], ["Charte IA", "/ia-responsable"], ["Développeurs", "/developpeurs"]] },
+      { title: "Le projet", links: [["À propos", "/a-propos"], ["Impact", "/impact"], ["Charte IA", "/ia-responsable"], ["Documentation", "/docs"], ["API", "/docs/api"]] },
     ],
     legal: [["Confidentialité", "/confidentialite"], ["Conditions", "/conditions"]],
   },
